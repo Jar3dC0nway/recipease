@@ -19,13 +19,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Setup environment variables
 env = environ.Env(DEBUG=(bool, False))
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+environ.Env.read_env()
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-SECRET_KEY = env("SECRET_KEY")
+# Put the .env file in the same folder location as this file
+
 DEBUG = env("DEBUG")
+SECRET_KEY = env("SECRET_KEY")
 
 DATABASE_URL = env("DATABASE_URL")
 DATABASE_NAME = env("DATABASE_NAME")
@@ -137,11 +137,11 @@ CREATE_TABLES = (
     "CREATE TABLE User (email VARCHAR(32), first_name VARCHAR(32), last_name VARCHAR(32), "
     "PRIMARY KEY (email));"
 
-    "CREATE TABLE Recipe (recipeID INT, email VARCHAR(32), title VARCHAR(32), description VARCHAR(64), cook_time INT, "
-    "instructions VARCHAR(512), date_created TIMESTAMP NOT NULL DEFAULT NOW(), "
+    "CREATE TABLE Recipe (recipeID INT AUTO_INCREMENT, email VARCHAR(32), title VARCHAR(32), description VARCHAR(64), "
+    "cook_time INT, instructions VARCHAR(512), date_created TIMESTAMP NOT NULL DEFAULT NOW(), "
     "PRIMARY KEY (recipeID), FOREIGN KEY (email) REFERENCES User(email));"
 
-    "CREATE TABLE Ingredient (ingredientID INT, name VARCHAR(32), food_type VARCHAR(32), "
+    "CREATE TABLE Ingredient (ingredientID INT AUTO_INCREMENT, name VARCHAR(32), food_type VARCHAR(32), "
     "PRIMARY KEY (ingredientID));"
 
     "CREATE TABLE Recipe_Ingredients (recipeID INT, ingredientID INT, amount INT, "
@@ -156,7 +156,7 @@ CREATE_TABLES = (
     "PRIMARY KEY (recipeID, commentID), FOREIGN KEY (email) REFERENCES User(email), "
     "FOREIGN KEY (recipeID) REFERENCES Recipe(recipeID));"
 
-    "CREATE TABLE Category (categoryID INT, name VARCHAR(32), "
+    "CREATE TABLE Category (categoryID INT AUTO_INCREMENT, name VARCHAR(32), "
     "PRIMARY KEY (categoryID));"
 
     "CREATE TABLE Belongs_To (recipeID INT, categoryID INT, "
