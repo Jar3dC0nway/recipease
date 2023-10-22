@@ -1,5 +1,5 @@
 """
-ASGI config for recipease project.
+ASGI config for recipease_sub project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'recipease.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'recipease_sub.settings')
 
 application = get_asgi_application()

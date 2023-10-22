@@ -7,8 +7,8 @@ Another: py database.py sql "SELECT * FROM User"
 from contextlib import closing
 import mysql.connector
 
-from recipease.settings import DATABASE_URL, DATABASE_NAME, USER_NAME, USER_PASSWORD
-from recipease.settings import CREATE_TABLES
+from recipease_sub.settings import DATABASE_URL, DATABASE_NAME, USER_NAME, USER_PASSWORD
+from recipease_sub.settings import CREATE_TABLES
 
 # Command Line Stuff
 import sys
@@ -48,7 +48,7 @@ def __run_sql(_sql, is_one=False):
                 c.execute(_sql)
                 a = c.fetchone()
             except:
-                pass
+                print(Exception)
             __close(db)
             return a
 
@@ -59,7 +59,7 @@ def __run_sql(_sql, is_one=False):
                 c.execute(s + ";")
                 a.append(c.fetchall())
             except Exception as e:
-                pass  # print("Exception: " + str(e))
+                print(e) # pass  # print("Exception: " + str(e))
     __close(db)
     return a
 
@@ -86,8 +86,8 @@ def sql(_sql, is_one=False):
 
 
 # Intended for non-command-line use, returns value instead of printing
-def sql_return(_sql):
-    return __run_sql(_sql)
+def sql_return(_sql, is_one=False):
+    return __run_sql(_sql, is_one)
 
 
 def sql_from_file(path):
@@ -97,7 +97,8 @@ def sql_from_file(path):
 
 # To confirm it's been added, running "SELECT COUNT(*) FROM recipe" should return [[(259,)]]
 def add_json_to_database(path):
-    sql_return("INSERT INTO user (email) VALUES ('API');")
+    sql_batch = ""
+    sql_batch += "INSERT INTO User (email) VALUES ('API');"
 
     iset = []
     qset = []
@@ -132,24 +133,24 @@ def add_json_to_database(path):
 
         # Recipes
 
-        _sql = (f"INSERT INTO recipe (recipeID, email, title, description, cook_time, instructions) "
+        _sql = (f"INSERT INTO Recipe (recipeID, email, title, description, cook_time, instructions) "
                 f"VALUES ({int(recipe_counter)}, 'API', '{str(name)}', 'Added by the API', {int(cooktime)}, "
                 f"'{str(instructions)}');")
-        sql_return(_sql)
+        sql_batch += _sql  # sql_return(_sql)
 
         # Nutrition
 
-        _sql = (f"INSERT INTO nutrition (recipeID, calories, fat, satfat, carbs, fiber, sugar, protein) "
+        _sql = (f"INSERT INTO Nutrition (recipeID, calories, fat, satfat, carbs, fiber, sugar, protein) "
                 f"VALUES ({int(recipe_counter)}, {int(calories)}, {int(fat)}, {int(satfat)}, {int(carbs)}, "
                 f"{int(fiber)}, {int(sugar)}, {int(protein)});")
-        sql_return(_sql)
+        sql_batch += _sql  # sql_return(_sql)
 
         # Comments
 
         if len(comments) > 0:
-            _sql = (f"INSERT INTO comment (recipeID, commentID, content, email) VALUES ({int(recipe_counter)}, 0, "
+            _sql = (f"INSERT INTO Comment (recipeID, commentID, content, email) VALUES ({int(recipe_counter)}, 0, "
                     f"'{comments}', 'API');")
-            sql_return(_sql)
+            sql_batch += _sql  # sql_return(_sql)
 
         # Ingredients
 
@@ -166,33 +167,33 @@ def add_json_to_database(path):
                     w = re.sub('[()\[\],]', '', word.lower())
                     if not (w in iset):
                         iset.append(w)
-                        _sql = (f"INSERT INTO ingredient (ingredientID, name, food_type) "
+                        _sql = (f"INSERT INTO Ingredient (ingredientID, name, food_type) "
                                 f"VALUES ({int(ingredient_counter)}, '{w}', '');")
-                        sql_return(_sql)
+                        sql_batch += _sql  # sql_return(_sql)
                         loc = ingredient_counter
                         ingredient_counter += 1
                     else:
                         loc = iset.index(w)
 
-                    _sql = (f"INSERT INTO recipe_ingredients (recipeID, ingredientID, amount) "
+                    _sql = (f"INSERT INTO Recipe_Ingredients (recipeID, ingredientID, amount) "
                             f"VALUES ({int(recipe_counter)}, {int(loc)}, {amount});")
-                    sql_return(_sql)
+                    sql_batch += _sql  # sql_return(_sql)
 
         # Tags
 
         for c in tags:
             if not (c in cset):
                 cset.append(c)
-                _sql = (f"INSERT INTO category (categoryID, name) "
+                _sql = (f"INSERT INTO Category (categoryID, name) "
                         f"VALUES ({int(category_counter)}, '{c}');")
-                sql_return(_sql)
+                sql_batch += _sql  # sql_return(_sql)
                 loc = category_counter
                 category_counter += 1
             else:
                 loc = cset.index(c)
-            _sql = (f"INSERT INTO belongs_to (recipeID, categoryID) "
+            _sql = (f"INSERT INTO Belongs_To (recipeID, categoryID) "
                 f"VALUES ({int(recipe_counter)}, {int(loc)});")
-            sql_return(_sql)
+            sql_batch += _sql  # sql_return(_sql)
 
         recipe_counter += 1
 
@@ -207,6 +208,9 @@ def add_json_to_database(path):
         # Stop after 300 have been uploaded for now, don't wanna get too crazy with the requests
         if recipe_counter >= 300:
             break
+
+        sql_return(sql_batch)
+        sql_batch = ""
 
         print(f"Progress: {recipe_counter}/{300}\r", end="", flush=True)
 
