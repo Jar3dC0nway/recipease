@@ -214,6 +214,24 @@ def add_json_to_database(path):
 
         print(f"Progress: {recipe_counter}/{300}\r", end="", flush=True)
 
+def user_exists(email):
+    # SQL query to check if the user exists in the users table
+    sql_query = f"SELECT COUNT(*) FROM User WHERE email = '{email}';"
+    print(sql_query)
+    values = (email,)
+
+    # Execute the SQL query 
+    result = __run_sql(sql_query)
+
+    # Check if the result indicates that the user exists
+    user_exists = result[0][0][0] 
+    print(user_exists)
+    return user_exists
+
+def add_user(email, username):
+    sql_query = f"INSERT INTO User (email, username) VALUES ('{email}', '{username}');"
+    __run_sql(sql_query)
+
 
 # Make this command-line-able
 if __name__ == "__main__":
