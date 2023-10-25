@@ -1,0 +1,78 @@
+{% load socialaccount %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+              <li class="nav-item">
+                    <a class="nav-link"  href = "{% url 'index' %}">Home</a>                  
+            </li>
+          </ul>
+        </div>
+  
+      </nav>
+  <title>Add a New Recipe</title>
+</head>
+<body>
+  <h1>Add a New Recipe</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="title">Title:</label>
+      <input type="text" class="form-control" id="title" name="title" required>
+    </div>
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <textarea class="form-control" id="description" name="description" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="cook_time">Cook Time (minutes):</label>
+      <input type="number" class="form-control" id="cook_time" name="cook_time" required>
+    </div>
+    <div class="form-group">
+      <label for="instructions">Instructions:</label>
+      <textarea class="form-control" id="instructions" name="instructions" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="calories"> Calories :</label>
+        <input type="number" class="form-control" id="calories" name="calories" required>
+    </div>
+    <div class="form-group">
+        <label for="fat"> Total Fat (g)</label>
+        <input type="number" class="form-control" id="fat" name="fat" required>
+    </div>
+    <div class="form-group">
+        <label for="sat_fat"> Sat Fat(g):</label>
+        <input type="number" class="form-control" id="sat_fat" name="sat_fat" required>
+    </div>
+    <div class="form-group">
+        <label for="carbs"> Total carbs (g):</label>
+        <input type="number" class="form-control" id="carbs" name="carbs" required>
+    </div>
+    <div class="form-group">
+        <label for="fiber">Fiber (g):</label>
+        <input type="number" class="form-control" id="fiber" name="fiber" required>
+    </div>
+    <div class="form-group">
+        <label for="sugar"> Sugar (g):</label>
+        <input type="number" class="form-control" id="sugar" name="sugar" required>
+    </div>
+    <div class="form-group">
+        <label for="protein"> Protein (g) :</label>
+        <input type="number" class="form-control" id="protein" name="protein" required>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Add Recipe</button>
+  </form>
+</body>
+</html>

@@ -217,7 +217,6 @@ def add_json_to_database(path):
 def user_exists(email):
     # SQL query to check if the user exists in the users table
     sql_query = f"SELECT COUNT(*) FROM User WHERE email = '{email}';"
-    print(sql_query)
     values = (email,)
 
     # Execute the SQL query 
@@ -225,13 +224,35 @@ def user_exists(email):
 
     # Check if the result indicates that the user exists
     user_exists = result[0][0][0] 
-    print(user_exists)
     return user_exists
 
 def add_user(email, username):
     sql_query = f"INSERT INTO User (email, username) VALUES ('{email}', '{username}');"
     __run_sql(sql_query)
 
+def get_user_info(email):
+    sql_query = f"SELECT username FROM User WHERE email = '{email}';"
+    result = __run_sql(sql_query)
+    return result[0][0][0]
+
+def max_recipeID():
+    maxID = __run_sql("SELECT MAX(recipeID) FROM Recipe;")
+    print(maxID[0][0][0])
+    return maxID[0][0][0]
+
+def add_new_recipe(email, recipe_id, title, description, cook_time, instructions):
+    sql_query = (
+        f"INSERT INTO Recipe (recipeID, email, title, description, cook_time, instructions) "
+        f"VALUES ({int(recipe_id)}, '{str(email)}', \"{str(title)}\", \"{str(description)}\", {int(cook_time)}, "
+        f"\"{str(instructions)}\");"
+    )
+    __run_sql(sql_query)
+
+def add_nutrition_info(recipe_id, calories , fat, satfat, carbs, fiber, sugar, protein):
+    sql_query = (f"INSERT INTO Nutrition (recipeID, calories, fat, satfat, carbs, fiber, sugar, protein) "
+                f"VALUES ({int(recipe_id)}, {int(calories)}, {int(fat)}, {int(satfat)}, {int(carbs)}, "
+                f"{int(fiber)}, {int(sugar)}, {int(protein)});")
+    __run_sql(sql_query)
 
 # Make this command-line-able
 if __name__ == "__main__":
