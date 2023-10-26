@@ -1,9 +1,9 @@
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
-from .database import sql_return, user_exists, add_user, get_user_info, max_recipeID, add_new_recipe, add_nutrition_info
-from .forms import SearchForm, RecipeForm
+from .database import sql_return, user_exists, add_user, get_user_info, max_recipeID, add_new_recipe, add_nutrition_info, max_ingredientID, add_ingredient
+from .forms import SearchForm, RecipeForm, IngredientForm, IngredientFormSet
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
 
@@ -50,24 +50,30 @@ def search(request):
 def view_profile(request, owner = None):
     curr_user = get_user(request)
     if owner:
-        owner_user = get_user_info(get_user(request).email)
+        owner_user = get_user_info(owner) #returns username
     else:
         owner_user = curr_user
     return render(request, 'profile.html',
         {"request_type":request.method, "user":curr_user, "owner":owner_user,})
 
+def success_view(request):
+    return render(request, 'success.html') 
+
 @login_required
 def add_recipe(request):
     if request.method == 'POST':
         form = RecipeForm(request.POST)
-        if form.is_valid():
-            # add to Recipe table
-            recipe_id = max_recipeID() + 1
+        ingredients_formset = IngredientFormSet(request.POST)
+
+        if form.is_valid() and ingredients_formset.is_valid():
+            recipe_id = max_recipeID() + 1  
             title = form.cleaned_data['title']
             description = form.cleaned_data['description']
             cook_time = form.cleaned_data['cook_time']
             instructions = form.cleaned_data['instructions']
-            add_new_recipe(get_user(request).email, recipe_id, title, description, cook_time, instructions )
+
+            #add to Recipe table
+            add_new_recipe(get_user(request).email, recipe_id, title, description, cook_time, instructions)
 
             #add to Nutrition table
             calories = form.cleaned_data['calories']
@@ -79,8 +85,23 @@ def add_recipe(request):
             protein = form.cleaned_data['protein']
             add_nutrition_info(recipe_id, calories , fat, sat_fat, carbs, fiber, sugar, protein)
 
+          
+            for ingredient_form in ingredients_formset:
+                name = ingredient_form.cleaned_data.get('name')
+                amount = ingredient_form.cleaned_data.get('amount')
+                ingredient_type = ingredient_form.cleaned_data.get('ingredient_type')
+                ingredientID = max_ingredientID() + 1 
+
+                #add to DB 
+                add_ingredient(ingredientID, recipe_id, name, ingredient_type, amount)
+
+            return redirect('success_view') 
+
     else:
         form = RecipeForm()
-    return render(request, 'add_recipe.html', {'form': form})
+        ingredients_formset = IngredientFormSet()
+
+    return render(request, 'add_recipe.html', {'form': form, 'ingredients_formset': ingredients_formset})
+
 
     

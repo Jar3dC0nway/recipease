@@ -14,4 +14,5 @@ urlpatterns = [
     path('profile/<str:owner>', views.view_profile, name="profile"),
    # path('view_recipes/<str:user>', views.view_recipes, name="view_recipes"),
     path("add_recipe", views.add_recipe, name="add_recipe"),
+    path('success/', views.success_view, name='success_view'), 
 ]

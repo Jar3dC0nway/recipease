@@ -1,8 +1,18 @@
 from django import forms
+from django.forms import formset_factory
+
 
 
 class SearchForm(forms.Form):
     search = forms.CharField(label="Search")
+    
+
+class IngredientForm(forms.Form):
+    name = forms.CharField(max_length=32)
+    amount = forms.CharField(max_length=32)
+    ingredient_type = forms.CharField(max_length=32)
+
+IngredientFormSet = formset_factory(IngredientForm, extra=1)
 
 
 class RecipeForm(forms.Form):
@@ -17,4 +27,5 @@ class RecipeForm(forms.Form):
     fiber = forms.IntegerField()
     sugar = forms.IntegerField()
     protein = forms.IntegerField()
+    ingredients = IngredientFormSet()
 

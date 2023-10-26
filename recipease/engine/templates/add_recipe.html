@@ -71,8 +71,41 @@
         <label for="protein"> Protein (g) :</label>
         <input type="number" class="form-control" id="protein" name="protein" required>
     </div>
+    <div id="ingredients-container">
+        {{ ingredients_formset.management_form }}
+        {% for form in ingredients_formset.forms %}
+            <div class="ingredient-input">
+                {{ form.id }}
+                {{ form.name }}
+                {{ form.amount }}
+                {{ form.ingredient_type }}
+            </div>
+        {% endfor %}
+    </div>
+    <div>
+        <button type="button" id="add-ingredient-button">Add More Ingredient</button>
+    </div>
     
     <button type="submit" class="btn btn-primary">Add Recipe</button>
   </form>
+  <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const ingredientsContainer = document.getElementById('ingredients-container');
+        const addIngredientButton = document.getElementById('add-ingredient-button');
+        let ingredientIndex = 1; // Initialize the index
+
+        addIngredientButton.addEventListener('click', function() {
+            const ingredientInput = document.createElement('div');
+            ingredientInput.classList.add('ingredient-input');
+            ingredientInput.innerHTML = `
+                <input type="text" name="ingredients-name" placeholder="Ingredient Name">
+                <input type="text" name="ingredients-amount" placeholder="Amount">
+                <input type="text" name="ingredients-ingredient_type" placeholder="Ingredient Type">
+            `;
+            ingredientsContainer.appendChild(ingredientInput);
+            ingredientIndex++; // Increment the index for the next ingredient
+        });
+    });
+    </script>
 </body>
 </html>

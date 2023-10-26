@@ -230,11 +230,12 @@ def add_user(email, username):
     sql_query = f"INSERT INTO User (email, username) VALUES ('{email}', '{username}');"
     __run_sql(sql_query)
 
-def get_user_info(email):
-    sql_query = f"SELECT username FROM User WHERE email = '{email}';"
+def get_user_info(username):
+    sql_query = f"SELECT username FROM User WHERE username = '{username}';"
     result = __run_sql(sql_query)
     return result[0][0][0]
 
+# used to figure out the next recipeID
 def max_recipeID():
     maxID = __run_sql("SELECT MAX(recipeID) FROM Recipe;")
     print(maxID[0][0][0])
@@ -252,6 +253,23 @@ def add_nutrition_info(recipe_id, calories , fat, satfat, carbs, fiber, sugar, p
     sql_query = (f"INSERT INTO Nutrition (recipeID, calories, fat, satfat, carbs, fiber, sugar, protein) "
                 f"VALUES ({int(recipe_id)}, {int(calories)}, {int(fat)}, {int(satfat)}, {int(carbs)}, "
                 f"{int(fiber)}, {int(sugar)}, {int(protein)});")
+    __run_sql(sql_query)
+
+# used to figure out the next ingredientID
+def max_ingredientID():
+    maxID = __run_sql("SELECT MAX(ingredientID) FROM Ingredient;")
+    print(maxID[0][0][0])
+    return maxID[0][0][0]
+
+def add_ingredient(ingredientID, recipeID, name, food_type, amount):
+    sql_query = (f"INSERT INTO Ingredient (ingredientID, name, food_type) "
+            f"VALUES ({int(ingredientID)}, '{str(name)}', '{str(food_type)}');")
+
+    __run_sql(sql_query)
+                    
+    sql_query = (f"INSERT INTO Recipe_Ingredients (recipeID, ingredientID, amount) "
+            f"VALUES ({int(recipeID)}, {int(ingredientID)}, '{str(amount)}');")
+    
     __run_sql(sql_query)
 
 # Make this command-line-able
