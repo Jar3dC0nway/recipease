@@ -29,3 +29,14 @@ class RecipeForm(forms.Form):
     protein = forms.IntegerField()
     ingredients = IngredientFormSet()
 
+
+class RecipeRatingForm(forms.Form):
+    rating = forms.IntegerField(
+        label='Rating',
+        min_value=1,
+        max_value=5,
+        widget=forms.NumberInput(attrs={'type': 'number', 'min': 1, 'max': 5}),
+    )
+
+class CommentForm(forms.Form):
+    content = forms.CharField(label='Comment', widget=forms.Textarea(attrs={'rows': 3}))

@@ -2,8 +2,8 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 
-from .database import sql_return, user_exists, add_user, get_user_info, max_recipeID, add_new_recipe, add_nutrition_info, max_ingredientID, add_ingredient
-from .forms import SearchForm, RecipeForm, IngredientForm, IngredientFormSet
+from .database import sql_return, user_exists, add_user, get_user_info, max_recipeID, add_new_recipe, add_nutrition_info, max_ingredientID, add_ingredient, rating_exists, add_rating, update_rating, add_new_comment, max_commentID
+from .forms import SearchForm, RecipeForm, IngredientForm, IngredientFormSet, RecipeRatingForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
 
@@ -103,5 +103,50 @@ def add_recipe(request):
 
     return render(request, 'add_recipe.html', {'form': form, 'ingredients_formset': ingredients_formset})
 
+def rating_success_view(request):
+    return render(request, 'rating_success.html')
 
-    
+@login_required
+def rate_recipe(request, recipe_id):
+    if request.method == 'POST':
+        rating = request.POST.get('rating') 
+        form = RecipeRatingForm(request.POST)
+
+        if form.is_valid():
+            email = get_user(request).email
+            rating = form.cleaned_data['rating']
+            
+            # Check if the user has already rated this recipe
+            exists = rating_exists(email, recipe_id)
+            print(exists)
+
+            if exists:
+                # Update the existing rating
+                update_rating(email, recipe_id, rating)
+            else:
+                # Create a new rating
+                add_rating(email, recipe_id, rating)
+
+            return redirect('rating_success_view') 
+
+    return render(request, 'rate_recipe.html', {'recipe_id': recipe_id}) 
+
+def comment_success_view(request):
+    return render(request, 'comment_success.html')
+
+@login_required
+def add_comment(request, recipe_id):
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data['content']
+            email = get_user(request).email
+            commentID = max_commentID() + 1
+
+            # Insert the new comment using custom SQL
+            add_new_comment(email, recipe_id, content, commentID )
+
+            return redirect('comment_success_view') 
+
+    return render(request, 'add_comment.html', {'recipe_id': recipe_id})
+
