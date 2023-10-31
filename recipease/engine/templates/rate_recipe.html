@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block html %}
+
 <html>
 
 <form method="post" action="{% url 'rate_recipe' recipe_id %}">
@@ -16,3 +18,4 @@
   </form>
 
   </html>
+{% endblock %}
