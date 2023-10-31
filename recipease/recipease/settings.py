@@ -32,7 +32,7 @@ DATABASE_NAME = env("DATABASE_NAME")
 USER_NAME = env("USER_NAME")
 USER_PASSWORD = env("USER_PASSWORD")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -134,8 +134,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SITE_ID = 1  # Make admin site admin-able
-
 
 # ------------------------------- SQL ------------------------------- #
 
@@ -197,7 +195,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-SITE_ID = 2
+SITE_ID = 1
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
