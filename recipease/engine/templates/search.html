@@ -38,6 +38,10 @@
       <p>{{ term.9 }}</p>
       <p>{{ term.8 }}</p>
     </div>
+    {% if user.is_authenticated %}
+    <a class="btn btn-primary" href="{% url 'rate_recipe' term.0 %}">Rate</a>
+    <a class="btn btn-primary" href="{% url 'add_comment' term.0 %}" >Add Comment</a>
+    {% endif %}
     {% endfor %}
   </div>
 

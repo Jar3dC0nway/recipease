@@ -217,6 +217,139 @@ def add_json_to_database(path):
 
         print(f"Progress: {recipe_counter}/{300}\r", end="", flush=True)
 
+def user_exists(email):
+    # SQL query to check if the user exists in the users table
+    sql_query = f"SELECT COUNT(*) FROM User WHERE email = '{email}';"
+    
+    # Execute the SQL query 
+    result = __run_sql(sql_query)
+
+    # Check if the result indicates that the user exists
+    user_exists = result[0][0][0] 
+    return user_exists
+
+def add_user(email, username):
+    sql_query = f"INSERT INTO User (email, username) VALUES ('{email}', '{username}');"
+    __run_sql(sql_query)
+
+def get_user_info(username):
+    sql_query = f"SELECT username FROM User WHERE username = '{username}';"
+    result = __run_sql(sql_query)
+    return result[0][0][0]
+
+# used to figure out the next recipeID
+def max_recipeID():
+    maxID = __run_sql("SELECT MAX(recipeID) FROM Recipe;")
+    print(maxID[0][0][0])
+    return maxID[0][0][0]
+
+def add_new_recipe(email, recipe_id, title, description, cook_time, instructions):
+    sql_query = (
+        f"INSERT INTO Recipe (recipeID, email, title, description, cook_time, instructions) "
+        f"VALUES ({int(recipe_id)}, '{str(email)}', \"{str(title)}\", \"{str(description)}\", {int(cook_time)}, "
+        f"\"{str(instructions)}\");"
+    )
+    __run_sql(sql_query)
+
+def add_nutrition_info(recipe_id, calories , fat, satfat, carbs, fiber, sugar, protein):
+    sql_query = (f"INSERT INTO Nutrition (recipeID, calories, fat, satfat, carbs, fiber, sugar, protein) "
+                f"VALUES ({int(recipe_id)}, {int(calories)}, {int(fat)}, {int(satfat)}, {int(carbs)}, "
+                f"{int(fiber)}, {int(sugar)}, {int(protein)});")
+    __run_sql(sql_query)
+
+# used to figure out the next ingredientID
+def max_ingredientID():
+    maxID = __run_sql("SELECT MAX(ingredientID) FROM Ingredient;")
+    print(maxID[0][0][0])
+    return maxID[0][0][0]
+
+def add_ingredient(ingredientID, recipeID, name, food_type, amount):
+    sql_query = (f"INSERT INTO Ingredient (ingredientID, name, food_type) "
+            f"VALUES ({int(ingredientID)}, '{str(name)}', '{str(food_type)}');")
+
+    __run_sql(sql_query)
+                    
+    sql_query = (f"INSERT INTO Recipe_Ingredients (recipeID, ingredientID, amount) "
+            f"VALUES ({int(recipeID)}, {int(ingredientID)}, '{str(amount)}');")
+    
+    __run_sql(sql_query)
+
+
+def rating_exists(email, recipe_id):
+    sql_query = (f"SELECT value FROM Rates WHERE email = '{email}' AND recipeID = {recipe_id};")
+
+    result = __run_sql(sql_query)
+
+    if result and result[0]:  
+        rating_exists = result[0][0]
+        return rating_exists
+    else:
+        return None
+    
+
+def add_rating(email, recipe_id, rating):
+    sql_query = (f" INSERT INTO Rates (email, recipeID, value)"
+                 f" VALUES ('{str(email)}', {int(recipe_id)}, {int(rating)});")
+    __run_sql(sql_query)
+
+
+def update_rating(email, recipe_id, rating):
+    sql_query = (f"UPDATE Rates SET value = {int(rating)} "
+                f"WHERE email = '{str(email)}' AND recipeID = {int(recipe_id)};")
+    __run_sql(sql_query)
+
+def get_recipe(recipe_id):
+    sql_query = (f" SELECT * FROM Recipe WHERE recipeID = {recipe_id};")
+    __run_sql(sql_query)
+
+def max_commentID():
+    maxID = __run_sql("SELECT MAX(commentID) FROM Comment;")
+    print(maxID[0][0][0])
+    return maxID[0][0][0]
+
+def get_comments(recipe_id):
+    sql_query = f"SELECT content, email FROM Comment WHERE recipeID = {recipe_id};"
+    __run_sql(sql_query)
+
+def add_new_comment(email, recipe_id, content, commentID ):
+    sql_query = (f"INSERT INTO Comment (email, recipeID, content, commentID) "
+                 f"VALUES ('{str(email)}',{int(recipe_id)}, '{str(content)}',{int(commentID)});")
+    __run_sql(sql_query)
+
+def edit_comment(comment_id):
+    sql_query = (f"UPDATE Comment SET content = '{str(content)}' "
+                f"WHERE commentID = {int(comment_id)};")
+    __run_sql(sql_query)
+
+def edit_recipe(recipe_id, new_title, new_description, new_cook_time, new_instructions):
+    sql_query = (f"UPDATE Recipe SET title = '{str(new_title)}', description = '{str(new_description)}', "
+                 f"cook_time = {int(new_cook_time)}, instructions = '{str(new_instructions)}' "
+                 f"WHERE recipeID = {int(recipe_id)};")
+
+    __run_sql(sql_query)
+
+def get_all_user_recipes(email):
+    sql_query = (f"SELECT recipeID, title, description FROM Recipe WHERE email = '{str(email)}';")
+    return __run_sql(sql_query)
+
+def get_ingredient_info(ingredient_id):
+    sql_query = f"SELECT name, food_type FROM Ingredient WHERE ingredientID = {int(ingredient_id)};"
+    return __run_sql(sql_query)
+
+def add_to_favorite(email, recipe_id):
+    sql_query = f"INSERT INTO Favorite (email, recipeID) VALUES ('{str(email)}', int(recipe_id));"
+    __run_sql(sql_query)
+
+def view_favorites(email):
+    sql_query = f"SELECT * FROM Recipe NATURAL JOIN Favorite WHERE email = '{str(email)}';"
+    __run_sql(sql_query)
+
+def comment_length_check():
+    sql_query = "ALTER TABLE Comment ADD CONSTRAINT MaxCommentLengthCheck CHECK (LENGTH(content) <= 128);"
+    __run_sql(sql_query)
+
+
+
 
 # Make this command-line-able
 if __name__ == "__main__":

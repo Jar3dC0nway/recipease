@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<form method="post" action="{% url 'rate_recipe' recipe_id %}">
+    {% csrf_token %}
+    <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+    <label for="rating">Rate this recipe:</label>
+    <select name="rating" id="rating">
+      <option value="1">1 - Terrible</option>
+      <option value="2">2 - Bad</option>
+      <option value="3">3 - Okay</option>
+      <option value="4">4 - Good</option>
+      <option value="5">5 - Excellent</option>
+    </select>
+    <button type="submit">Submit Rating</button>
+  </form>
+
+  </html>
