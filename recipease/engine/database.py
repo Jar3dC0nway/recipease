@@ -7,8 +7,11 @@ Another: py database.py sql "SELECT * FROM User"
 from contextlib import closing
 import mysql.connector
 
-from recipease_sub.settings import DATABASE_URL, DATABASE_NAME, USER_NAME, USER_PASSWORD
-from recipease_sub.settings import CREATE_TABLES
+try:  # It's there trust. Added try catch (*cough* except) so it would stop error-ing
+    from recipease.settings import DATABASE_URL, DATABASE_NAME, USER_NAME, USER_PASSWORD
+    from recipease.settings import CREATE_TABLES
+except:
+    pass
 
 # Command Line Stuff
 import sys
