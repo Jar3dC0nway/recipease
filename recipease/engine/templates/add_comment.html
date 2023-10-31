@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+
+<form method="post" action="{% url 'add_comment' recipe_id %}">
+    {% csrf_token %}
+    <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
+    <label for="content">Add your comment:</label>
+    <textarea name="content" id="content"></textarea>
+    <button type="submit">Add Comment</button>
+</form>
+
+</html>
