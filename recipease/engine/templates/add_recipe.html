@@ -1,26 +1,9 @@
-{% load socialaccount %}
-{% load bootstrap5 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-{% bootstrap_messages %}
+{% extends "base.html" %}
+{% block html %}
+{% block recipeblock %}{% endblock %} <!-- Get rid of the add recipe link -->
 
-<!DOCTYPE html>
 <html>
 <head>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav">
-              <li class="nav-item">
-                    <a class="nav-link"  href = "{% url 'index' %}">Home</a>                  
-            </li>
-          </ul>
-        </div>
-  
-      </nav>
   <title>Add a New Recipe</title>
 </head>
 <body>
@@ -109,3 +92,5 @@
     </script>
 </body>
 </html>
+
+{% endblock %}
