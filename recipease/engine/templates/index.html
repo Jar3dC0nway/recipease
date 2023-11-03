@@ -12,7 +12,7 @@
 {% endif %}
 
   <div class="d-flex justify-content-center">
-    <form method="post" enctype="multipart/form-data">
+    <form method="get" enctype="multipart/form-data" action="{% url 'search' %}">
         {% csrf_token %}
         {{ form.as_p }}
     </form>
