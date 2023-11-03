@@ -178,6 +178,43 @@ CREATE_TABLES = (
     "PRIMARY KEY(recipeID), FOREIGN KEY (recipeID) REFERENCES Recipe(recipeID));"
 )
 
+CREATE_AUDIT_TABLES = (
+    "CREATE TABLE User_audit (log_date TIMESTAMP NOT NULL DEFAULT NOW(), who_update VARCHAR(32) NOT NULL, "
+    "email VARCHAR(32), username VARCHAR(32), old_email VARCHAR(32), old_username VARCHAR(32));"
+
+    "CREATE TABLE Recipe_audit (log_date TIMESTAMP NOT NULL DEFAULT NOW(), who_update VARCHAR(32) NOT NULL, "
+    "recipeID INT, email VARCHAR(32), title VARCHAR(32), description VARCHAR(64), cook_time INT, instructions VARCHAR(512), "
+    "old_recipeID INT, old_email VARCHAR(32), old_title VARCHAR(32), old_description VARCHAR(64), old_cook_time INT, "
+    "old_instructions VARCHAR(512));"
+
+    "CREATE TABLE Ingredient_audit (log_date TIMESTAMP NOT NULL DEFAULT NOW(), who_update VARCHAR(32) NOT NULL, "
+    "ingredientID INT, name VARCHAR(32), food_type VARCHAR(32), old_ingredientID INT, old_name VARCHAR(32), "
+    "old_food_type VARCHAR(32));"
+
+    "CREATE TABLE Recipe_Ingredients_audit (log_date TIMESTAMP NOT NULL DEFAULT NOW(), who_update VARCHAR(32) NOT NULL, "
+    "recipeID INT, ingredientID INT, amount VARCHAR(32), old_recipeID INT, old_ingredientID INT, old_amount VARCHAR(32));"
+
+    "CREATE TABLE Rates_audit (log_date TIMESTAMP NOT NULL DEFAULT NOW(), who_update VARCHAR(32) NOT NULL, recipeID INT, "
+    "email VARCHAR(32), value INT, old_recipeID INT, old_email VARCHAR(32), old_value INT);"
+
+    "CREATE TABLE Comment_audit (log_date TIMESTAMP NOT NULL DEFAULT NOW(), who_update VARCHAR(32) NOT NULL, "
+    "recipeID INT, commentID INT, content VARCHAR(128), email VARCHAR(32), old_recipeID INT, old_commentID INT, "
+    "old_content VARCHAR(128), old_email VARCHAR(32));"
+
+    "CREATE TABLE Category_audit (log_date TIMESTAMP NOT NULL DEFAULT NOW(), who_update VARCHAR(32) NOT NULL, "
+    "categoryID INT, name VARCHAR(32), old_categoryID INT, old_name VARCHAR(32));"
+
+    "CREATE TABLE Belongs_To_audit (log_date TIMESTAMP NOT NULL DEFAULT NOW(), who_update VARCHAR(32) NOT NULL, "
+    "recipeID INT, categoryID INT, old_recipeID INT, old_categoryID INT);"
+
+    "CREATE TABLE Favorite_audit (log_date TIMESTAMP NOT NULL DEFAULT NOW(), who_update VARCHAR(32) NOT NULL, "
+    "email VARCHAR(32), recipeID INT, old_email VARCHAR(32), old_recipeID INT);"
+
+    "CREATE TABLE Nutrition_audit (log_date TIMESTAMP NOT NULL DEFAULT NOW(), who_update VARCHAR(32) NOT NULL, "
+    "recipeID INT, calories INT, fat INT, satfat INT, carbs INT, fiber INT, sugar INT, protein INT, old_recipeID INT, "
+    "old_calories INT, old_fat INT, old_satfat INT, old_carbs INT, old_fiber INT, old_sugar INT, old_protein INT);"
+)
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend'

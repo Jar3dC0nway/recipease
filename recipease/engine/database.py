@@ -9,9 +9,10 @@ import mysql.connector
 
 try:  # It's there trust. Added try catch (*cough* except) so it would stop error-ing
     from recipease.settings import DATABASE_URL, DATABASE_NAME, USER_NAME, USER_PASSWORD
-    from recipease.settings import CREATE_TABLES
+    from recipease.settings import CREATE_TABLES, CREATE_AUDIT_TABLES
 except:
     pass
+
 
 # Command Line Stuff
 import sys
@@ -69,6 +70,9 @@ def __run_sql(_sql, is_one=False):
 
 def create_tables():
     __run_sql(CREATE_TABLES)
+
+def create_audit_tables():
+    __run_sql(CREATE_AUDIT_TABLES)
 
 
 def get_table(table_name):
@@ -348,6 +352,301 @@ def comment_length_check():
     sql_query = "ALTER TABLE Comment ADD CONSTRAINT MaxCommentLengthCheck CHECK (LENGTH(content) <= 128);"
     __run_sql(sql_query)
 
+
+
+# SECURITY - AUDIT LOG COMMANDS 
+
+def User_audit_log_insert():
+    sql_query = (
+    f"CREATE TRIGGER user_audit_insert "
+    f"BEFORE INSERT ON User "
+    f"FOR EACH ROW "
+        f"INSERT INTO User_audit (log_date, who_update, email, username, old_email, old_username) "
+        f"VALUES (NOW(), USER(), NEW.email, NEW.username, NULL, NULL); "
+    )
+    
+    __run_sql(sql_query)
+
+def User_audit_log_update():
+    sql_query = (
+        f"CREATE TRIGGER user_audit_update "
+        f"BEFORE UPDATE ON User "
+        f"FOR EACH ROW "
+            f"INSERT INTO User_audit (log_date, who_update, email, username, old_email, old_username) "
+            f"VALUES (NOW(), USER(), NEW.email, NEW.username, OLD.email, OLD.username); "
+    )
+    __run_sql(sql_query)
+
+def User_audit_log_delete():
+    sql_query = (
+        f"CREATE TRIGGER user_audit_delete "
+        f"BEFORE DELETE ON User "
+        f"FOR EACH ROW "
+            f"INSERT INTO User_audit (log_date, who_update, email, username, old_email, old_username) "
+            f"VALUES (NOW(), USER(), NULL, NULL, OLD.email, OLD.username); "
+    )
+    __run_sql(sql_query)
+
+def Recipe_audit_log_insert():
+    sql_query = (f"CREATE TRIGGER recipe_audit_insert "
+                f"BEFORE INSERT ON Recipe "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Recipe_audit (log_date, who_update, recipeID, email, title, description, cook_time, instructions, "
+                        f"old_recipeID, old_email, old_title, old_description, old_cook_time, old_instructions) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.email, NEW.title, NEW.description, NEW.cook_time, NEW.instructions, "
+                        f"NULL, NULL, NULL, NULL, NULL, NULL);")
+
+    __run_sql(sql_query)
+
+def Recipe_audit_log_update():
+    sql_query = (f"CREATE TRIGGER recipe_audit_update "
+                f"BEFORE UPDATE ON Recipe "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Recipe_audit (log_date, who_update, recipeID, email, title, description, cook_time, instructions, "
+                        f"old_recipeID, old_email, old_title, old_description, old_cook_time, old_instructions) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.email, NEW.title, NEW.description, NEW.cook_time, NEW.instructions, "
+                        f"OLD.recipeID, OLD.email, OLD.title, OLD.description, OLD.cook_time, OLD.instructions); ")
+    __run_sql(sql_query)
+
+
+def Recipe_audit_log_delete():
+    sql_query = (f"CREATE TRIGGER recipe_audit_delete "
+                f"BEFORE DELETE ON Recipe "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Recipe_audit (log_date, who_update, recipeID, email, title, description, cook_time, instructions, "
+                        f"old_recipeID, old_email, old_title, old_description, old_cook_time, old_instructions) "
+                    f"VALUES (NOW(), USER(), NULL, NULL, NULL, NULL, NULL, NULL, "
+                        f"OLD.recipeID, OLD.email, OLD.title, OLD.description, OLD.cook_time, OLD.instructions); ")
+    __run_sql(sql_query)
+
+def Ingredient_audit_insert():
+    sql_query = (f"CREATE TRIGGER ingredient_audit_insert "
+                f"BEFORE INSERT ON Ingredient "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Ingredient_audit (log_date, who_update, ingredientID, name, food_type, "
+                        f"old_ingredientID, old_name, old_food_type) "
+                    f"VALUES (NOW(), USER(), NEW.ingredientID, NEW.name, NEW.food_type, NULL, NULL, NULL); ")
+    __run_sql(sql_query)
+
+def Ingredient_audit_update():
+    sql_query = (f"CREATE TRIGGER ingredient_audit_update "
+                f"BEFORE UPDATE ON Ingredient "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Ingredient_audit (log_date, who_update, ingredientID, name, food_type, "
+                        f"old_ingredientID, old_name, old_food_type) "
+                    f"VALUES (NOW(), USER(), NEW.ingredientID, NEW.name, NEW.food_type, "
+                        f"OLD.ingredientID, OLD.name, OLD.food_type); ")
+    __run_sql(sql_query)
+
+def Ingredient_audit_delete():
+    sql_query = (f"CREATE TRIGGER ingredient_audit_delete "
+                f"BEFORE DELETE ON Ingredient "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Ingredient_audit (log_date, who_update, ingredientID, name, food_type, "
+                        f"old_ingredientID, old_name, old_food_type) "
+                    f"VALUES (NOW(), USER(), NULL, NULL, NULL, "
+                        f"OLD.ingredientID, OLD.name, OLD.food_type); ")
+    __run_sql(sql_query)
+
+
+def Recipe_Ingredients_audit_log_insert():
+    sql_query = (f"CREATE TRIGGER recipe_ingredients_audit_insert "
+                f"BEFORE INSERT ON Recipe_Ingredients "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Recipe_Ingredients_audit (log_date, who_update, recipeID, ingredientID, amount, "
+                        f"old_recipeID, old_ingredientID, old_amount) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.ingredientID, NEW.amount, NULL, NULL, NULL); ")
+
+    __run_sql(sql_query)
+                    
+def Recipe_Ingredients_audit_log_update():
+    sql_query = (f"CREATE TRIGGER recipe_ingredients_audit_update "
+                f"BEFORE UPDATE ON Recipe_Ingredients "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Recipe_Ingredients_audit (log_date, who_update, recipeID, ingredientID, amount, "
+                        f"old_recipeID, old_ingredientID, old_amount) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.ingredientID, NEW.amount, "
+                        f"OLD.recipeID, OLD.ingredientID, OLD.amount); ")
+    __run_sql(sql_query)
+
+def Recipe_Ingredients_audit_log_delete():
+    sql_query = (f"CREATE TRIGGER recipe_ingredients_audit_delete "
+                f"BEFORE DELETE ON Recipe_Ingredients "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Recipe_Ingredients_audit (log_date, who_update, recipeID, ingredientID, amount, "
+                        f"old_recipeID, old_ingredientID, old_amount) "
+                    f"VALUES (NOW(), USER(), NULL, NULL, NULL, "
+                        f"OLD.recipeID, OLD.ingredientID, OLD.amount); ")
+    __run_sql(sql_query)
+
+def Rates_audit_log_insert():
+    sql_query = (f"CREATE TRIGGER rates_audit_insert "
+                f"BEFORE INSERT ON Rates "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Rates_audit (log_date, who_update, recipeID, email, value, "
+                        f"old_recipeID, old_email, old_value) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.email, NEW.value, NULL, NULL, NULL); ")
+    __run_sql(sql_query)
+
+def Rates_audit_log_update():
+    sql_query = (f"CREATE TRIGGER rates_audit_update "
+                f"BEFORE UPDATE ON Rates "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Rates_audit (log_date, who_update, recipeID, email, value, "
+                        f"old_recipeID, old_email, old_value) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.email, NEW.value, "
+                        f"OLD.recipeID, OLD.email, OLD.value); ")
+    __run_sql(sql_query)
+
+def Rates_audit_log_delete():
+    sql_query = (f"CREATE TRIGGER rates_audit_delete "
+                f"BEFORE DELETE ON Rates "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Rates_audit (log_date, who_update, recipeID, email, value, "
+                        f"old_recipeID, old_email, old_value) "
+                    f"VALUES (NOW(), USER(), NULL, NULL, NULL, "
+                        f"OLD.recipeID, OLD.email, OLD.value); ")
+    __run_sql(sql_query)
+
+def Comment_audit_log_insert():
+    sql_query = (f"CREATE TRIGGER comment_audit_insert "
+                f"BEFORE INSERT ON Comment "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Comment_audit (log_date, who_update, recipeID, commentID, content, email, "
+                        f"old_recipeID, old_commentID, old_content, old_email) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.commentID, NEW.content, NEW.email, "
+                        f"NULL, NULL, NULL, NULL); ")
+    __run_sql(sql_query)
+
+
+def Comment_audit_log_update():
+    sql_query = (f"CREATE TRIGGER comment_audit_update "
+                f"BEFORE UPDATE ON Comment "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Comment_audit (log_date, who_update, recipeID, commentID, content, email, "
+                        f"old_recipeID, old_commentID, old_content, old_email) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.commentID, NEW.content, NEW.email, "
+                        f"OLD.recipeID, OLD.commentID, OLD.content, OLD.email); ")
+    __run_sql(sql_query)
+
+def Comment_audit_log_delete():
+    sql_query = (f"CREATE TRIGGER comment_audit_delete "
+                f"BEFORE DELETE ON Comment "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Comment_audit (log_date, who_update, recipeID, commentID, content, email, "
+                        f"old_recipeID, old_commentID, old_content, old_email) "
+                    f"VALUES (NOW(), USER(), NULL, NULL, NULL, NULL, "
+                        f"OLD.recipeID, OLD.commentID, OLD.content, OLD.email); ")   
+    __run_sql(sql_query) 
+
+def Catergory_audit_log_insert():
+    sql_query = (f"CREATE TRIGGER category_audit_insert "
+                f"BEFORE INSERT ON Category "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Category_audit (log_date, who_update, categoryID, name, "
+                        f"old_categoryID, old_name) "
+                    f"VALUES (NOW(), USER(), NEW.categoryID, NEW.name, NULL, NULL); ")
+    __run_sql(sql_query) 
+ 
+
+def Category_audit_log_update():
+    sql_query = (f"CREATE TRIGGER category_audit_update "
+                f"BEFORE UPDATE ON Category "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Category_audit (log_date, who_update, categoryID, name, "
+                        f"old_categoryID, old_name) "
+                    f"VALUES (NOW(), USER(), NEW.categoryID, NEW.name, "
+                        f"OLD.categoryID, OLD.name); ")
+    __run_sql(sql_query)
+
+def Category_audit_log_delete():
+    sql_query = (f"CREATE TRIGGER category_audit_delete "
+                f"BEFORE DELETE ON Category "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Category_audit (log_date, who_update, categoryID, name, "
+                        f"old_categoryID, old_name) "
+                    f"VALUES (NOW(), USER(), NULL, NULL, "
+                        f"OLD.categoryID, OLD.name); ")
+    __run_sql(sql_query) 
+
+def Belongs_to_audit_log_insert():
+    sql_query = (f"CREATE TRIGGER belongs_to_audit_insert "
+                f"BEFORE INSERT ON Belongs_To "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Belongs_To_audit (log_date, who_update, recipeID, categoryID, "
+                        f"old_recipeID, old_categoryID) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.categoryID, NULL, NULL); ")
+    __run_sql(sql_query) 
+
+
+def Belongs_to_audit_log_update():
+    sql_query = (f"CREATE TRIGGER belongs_to_audit_update "
+                f"BEFORE UPDATE ON Belongs_To "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Belongs_To_audit (log_date, who_update, recipeID, categoryID, "
+                        f"old_recipeID, old_categoryID) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.categoryID, "
+                        f"OLD.recipeID, OLD.categoryID); ")
+    __run_sql(sql_query) 
+
+def Belongs_to_audit_log_delete():
+    sql_query = (f"CREATE TRIGGER belongs_to_audit_delete "
+                f"BEFORE DELETE ON Belongs_To "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Belongs_To_audit (log_date, who_update, recipeID, categoryID, "
+                        f"old_recipeID, old_categoryID) "
+                    f"VALUES (NOW(), USER(), NULL, NULL, "
+                        f"OLD.recipeID, OLD.categoryID); ")
+    __run_sql(sql_query) 
+
+def Favorite_audit_log_insert():
+    sql_query = (f"CREATE TRIGGER favorite_audit_insert "
+                f"BEFORE INSERT ON Favorite "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Favorite_audit (log_date, who_update, email, recipeID, "
+                        f"old_email, old_recipeID) "
+                    f"VALUES (NOW(), USER(), NEW.email, NEW.recipeID, NULL, NULL); ")
+    __run_sql(sql_query) 
+
+
+def Favorite_audit_log_delete():
+    sql_query = (f"CREATE TRIGGER favorite_audit_delete "
+                f"BEFORE DELETE ON Favorite "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Favorite_audit (log_date, who_update, email, recipeID, "
+                        f"old_email, old_recipeID) "
+                    f"VALUES (NOW(), USER(), NULL, NULL, OLD.email, OLD.recipeID); ")
+    __run_sql(sql_query) 
+
+def Nutrition_audit_log_insert():
+    sql_query = (f"CREATE TRIGGER nutrition_audit_insert "
+                f"BEFORE INSERT ON Nutrition "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Nutrition_audit (log_date, who_update, recipeID, calories, fat, satfat, carbs, fiber, sugar, protein, "
+                        f"old_recipeID, old_calories, old_fat, old_satfat, old_carbs, old_fiber, old_sugar, old_protein) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.calories, NEW.fat, NEW.satfat, NEW.carbs, NEW.fiber, NEW.sugar, NEW.protein, "
+                        f"NULL, NULL, NULL, NULL, NULL, NULL, NULL); ")
+    __run_sql(sql_query) 
+
+def Nutrition_audit_log_update():
+    sql_query = (f"CREATE TRIGGER nutrition_audit_update "
+                f"BEFORE UPDATE ON Nutrition "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Nutrition_audit (log_date, who_update, recipeID, calories, fat, satfat, carbs, fiber, sugar, protein, "
+                        f"old_recipeID, old_calories, old_fat, old_satfat, old_carbs, old_fiber, old_sugar, old_protein) "
+                    f"VALUES (NOW(), USER(), NEW.recipeID, NEW.calories, NEW.fat, NEW.satfat, NEW.carbs, NEW.fiber, NEW.sugar, NEW.protein, "
+                       f" OLD.recipeID, OLD.calories, OLD.fat, OLD.satfat, OLD.carbs, OLD.fiber, OLD.sugar, OLD.protein); ")
+    __run_sql(sql_query) 
+
+def Nutrition_audit_log_delete():
+    sql_query = (f"CREATE TRIGGER nutrition_audit_delete "
+                f"BEFORE DELETE ON Nutrition "
+                f"FOR EACH ROW "
+                    f"INSERT INTO Nutrition_audit (log_date, who_update, recipeID, calories, fat, satfat, carbs, fiber, sugar, protein, "
+                        f"old_recipeID, old_calories, old_fat, old_satfat, old_carbs, old_fiber, old_sugar, old_protein) "
+                    f"VALUES (NOW(), USER(), NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, "
+                        f"OLD.recipeID, OLD.calories, OLD.fat, OLD.satfat, OLD.carbs, OLD.fiber, OLD.sugar, OLD.protein); ")
+    __run_sql(sql_query) 
 
 
 
