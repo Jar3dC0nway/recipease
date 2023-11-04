@@ -18,5 +18,9 @@ urlpatterns = [
     path('rating_success/', views.rating_success_view, name='rating_success_view'),
     path('rate_recipe/<int:recipe_id>/', views.rate_recipe, name='rate_recipe'),
     path('add_comment/<int:recipe_id>/', views.add_comment, name='add_comment'),
+    path('edit_comment/<int:recipe_id>/<int:comment_id>', views.edit_comment_info, name='edit_comment'),
+    path('delete_comment/<int:recipe_id>/<int:comment_id>', views.delete_comment_info, name='delete_comment'),
     path('comment_success/', views.comment_success_view, name='comment_success_view'),
+    path('comment_edit_success/', views.comment_edit_success_view, name='comment_edit_success_view'),
+    path('comment_delete_success/', views.comment_delete_success_view, name='comment_delete_success_view'),
 ]

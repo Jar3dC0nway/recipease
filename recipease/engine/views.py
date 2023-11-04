@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 
 from .database import sql_return, user_exists, add_user, get_user_info, max_recipeID, add_new_recipe, \
     add_nutrition_info, max_ingredientID, add_ingredient, rating_exists, add_rating, update_rating, add_new_comment, \
-    max_commentID
+    max_commentID, edit_comment, delete_comment
 from .forms import SearchForm, RecipeForm, IngredientForm, IngredientFormSet, RecipeRatingForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
@@ -45,6 +45,11 @@ def search(request):
                 last = s[3]
                 cleaned.append(s)
                 li = list(cleaned[-1])
+
+                recipeID = li[0]
+                comments = sql_return(f"SELECT content, email, recipeID, commentID FROM Comment WHERE recipeID = {recipeID};")
+                li.append(comments[0])
+
                 li[8] = [s[8]]
             else:  # Otherwise, don't add it and just add the ingredient info
                 li = list(cleaned[-1])
@@ -171,3 +176,74 @@ def add_comment(request, recipe_id):
             return redirect('comment_success_view')
 
     return render(request, 'add_comment.html', {'recipe_id': recipe_id})
+
+
+def check_matching_email(request, recipe_id, comment_id):
+
+    if not (str(recipe_id).isnumeric() and str(comment_id).isnumeric()):  # Imagine sql injecting comments
+        print(f"{request.user} tried modifying/deleting comment with recipeID: {recipe_id} and commentID: {comment_id}")
+        return False, HttpResponseRedirect("/")
+
+    c = sql_return(f"SELECT email FROM Comment WHERE recipeID = {recipe_id} AND commentID = {comment_id};")
+    try:
+        c = c[0][0]
+    except Exception:
+        return False, HttpResponseRedirect("/")
+    if len(c) == 0:
+        print("email not found")
+        return False, HttpResponseRedirect("/")
+    if c[0] != get_user(request).email:
+        print("email not matched")
+        return False, HttpResponseRedirect("/")
+    return True, None
+
+
+@login_required
+def edit_comment_info(request, recipe_id, comment_id):
+    success, http = check_matching_email(request, recipe_id, comment_id)
+    if not success:
+        return http
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data['content']
+            edit_comment(recipe_id, comment_id, content)
+            return redirect('comment_edit_success_view')
+
+    return render(request, 'edit_comment.html', {'recipe_id': recipe_id, 'comment_id': comment_id})
+
+
+@login_required
+def edit_comment_info(request, recipe_id, comment_id):
+    success, http = check_matching_email(request, recipe_id, comment_id)
+    if not success:
+        return http
+
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            content = form.cleaned_data['content']
+            edit_comment(recipe_id, comment_id, content)
+            return redirect('comment_edit_success_view')
+
+    return render(request, 'edit_comment.html', {'recipe_id': recipe_id, 'comment_id': comment_id})
+
+
+def comment_edit_success_view(request):
+    return render(request, 'comment_edit_success.html')
+
+
+@login_required
+def delete_comment_info(request, recipe_id, comment_id):
+    success, http = check_matching_email(request, recipe_id, comment_id)
+    if not success:
+        return http
+
+    delete_comment(int(recipe_id), int(comment_id))
+
+    return redirect('comment_delete_success_view')
+
+
+def comment_delete_success_view(request):
+    return render(request, 'comment_delete_success.html')
