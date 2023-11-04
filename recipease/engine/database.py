@@ -320,9 +320,13 @@ def add_new_comment(email, recipe_id, content, commentID ):
                  f"VALUES ('{str(email)}',{int(recipe_id)}, '{str(content)}',{int(commentID)});")
     __run_sql(sql_query)
 
-def edit_comment(comment_id):
+def edit_comment(recipe_id, comment_id, content):
     sql_query = (f"UPDATE Comment SET content = '{str(content)}' "
-                f"WHERE commentID = {int(comment_id)};")
+                f"WHERE commentID = {int(comment_id)} AND recipeID = {int(recipe_id)};")
+    __run_sql(sql_query)
+
+def delete_comment(recipe_id, comment_id):
+    sql_query = (f"DELETE FROM Comment WHERE commentID = {int(comment_id)} AND recipeID = {int(recipe_id)};")
     __run_sql(sql_query)
 
 def edit_recipe(recipe_id, new_title, new_description, new_cook_time, new_instructions):
