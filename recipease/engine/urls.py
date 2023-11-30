@@ -23,4 +23,5 @@ urlpatterns = [
     path('comment_success/', views.comment_success_view, name='comment_success_view'),
     path('comment_edit_success/', views.comment_edit_success_view, name='comment_edit_success_view'),
     path('comment_delete_success/', views.comment_delete_success_view, name='comment_delete_success_view'),
+    path('favorite_recipe/<int:recipe_id>/', views.favorite_recipe, name='favorite_recipe')
 ]
