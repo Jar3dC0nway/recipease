@@ -1,76 +1,65 @@
 {% extends "base.html" %}
+
 {% block html %}
 {% block recipeblock %}{% endblock %} <!-- Get rid of the add recipe link -->
 
-<html>
+<html lang="en">
 <head>
   <title>Add a New Recipe</title>
+  <!-- Add any specific head elements here if needed -->
 </head>
 <body>
-  <h1>Add a New Recipe</h1>
-  <form method="post">
-    {% csrf_token %}
-    <div class="form-group">
-      <label for="title">Title:</label>
-      <input type="text" class="form-control" id="title" name="title" required>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <div class="card">
+          <div class="card-header">
+            <h1 class="text-center">Add a New Recipe</h1>
+          </div>
+          <div class="card-body">
+            <form method="post">
+              {% csrf_token %}
+              <div class="form-group mb-3">
+                <label for="title">Title:</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+              </div>
+              <div class="form-group mb-3">
+                <label for="description">Description:</label>
+                <textarea class="form-control" id="description" name="description" required></textarea>
+              </div>
+              <div class="form-group mb-3">
+                <label for="cook_time">Cook Time (minutes):</label>
+                <input type="number" class="form-control" id="cook_time" name="cook_time" required>
+              </div>
+              <div class="form-group mb-3">
+                <label for="instructions">Instructions:</label>
+                <textarea class="form-control" id="instructions" name="instructions" required></textarea>
+              </div>
+              <div class="form-group mb-3">
+                <label for="calories">Calories:</label>
+                <input type="number" class="form-control" id="calories" name="calories" required>
+              </div>
+              <div id="ingredients-container" class="mb-3">
+                {{ ingredients_formset.management_form }}
+                {% for form in ingredients_formset.forms %}
+                  <div class="ingredient-input mb-3">
+                    {{ form.id }}
+                    {{ form.name }}
+                    {{ form.amount }}
+                    {{ form.ingredient_type }}
+                  </div>
+                {% endfor %}
+              </div>
+              <div class="mb-3">
+                <button type="button" id="add-ingredient-button" class="btn btn-secondary">Add More Ingredient</button>
+              </div>
+              <button type="submit" class="btn btn-primary">Add Recipe</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="form-group">
-      <label for="description">Description:</label>
-      <textarea class="form-control" id="description" name="description" required></textarea>
-    </div>
-    <div class="form-group">
-      <label for="cook_time">Cook Time (minutes):</label>
-      <input type="number" class="form-control" id="cook_time" name="cook_time" required>
-    </div>
-    <div class="form-group">
-      <label for="instructions">Instructions:</label>
-      <textarea class="form-control" id="instructions" name="instructions" required></textarea>
-    </div>
-    <div class="form-group">
-        <label for="calories"> Calories :</label>
-        <input type="number" class="form-control" id="calories" name="calories" required>
-    </div>
-    <div class="form-group">
-        <label for="fat"> Total Fat (g)</label>
-        <input type="number" class="form-control" id="fat" name="fat" required>
-    </div>
-    <div class="form-group">
-        <label for="sat_fat"> Sat Fat(g):</label>
-        <input type="number" class="form-control" id="sat_fat" name="sat_fat" required>
-    </div>
-    <div class="form-group">
-        <label for="carbs"> Total carbs (g):</label>
-        <input type="number" class="form-control" id="carbs" name="carbs" required>
-    </div>
-    <div class="form-group">
-        <label for="fiber">Fiber (g):</label>
-        <input type="number" class="form-control" id="fiber" name="fiber" required>
-    </div>
-    <div class="form-group">
-        <label for="sugar"> Sugar (g):</label>
-        <input type="number" class="form-control" id="sugar" name="sugar" required>
-    </div>
-    <div class="form-group">
-        <label for="protein"> Protein (g) :</label>
-        <input type="number" class="form-control" id="protein" name="protein" required>
-    </div>
-    <div id="ingredients-container">
-        {{ ingredients_formset.management_form }}
-        {% for form in ingredients_formset.forms %}
-            <div class="ingredient-input">
-                {{ form.id }}
-                {{ form.name }}
-                {{ form.amount }}
-                {{ form.ingredient_type }}
-            </div>
-        {% endfor %}
-    </div>
-    <div>
-        <button type="button" id="add-ingredient-button">Add More Ingredient</button>
-    </div>
-    
-    <button type="submit" class="btn btn-primary">Add Recipe</button>
-  </form>
+</div>
   <script>
         document.addEventListener('DOMContentLoaded', function() {
         const ingredientsContainer = document.getElementById('ingredients-container');

@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 
 {% block html %}
-{% block profileblock %}{% endblock %} <!-- Get rid of the home link -->
-
-<html>
+<html lang="en">
 <head>
   <title>Profile</title>
 </head>
@@ -13,11 +11,8 @@
   </div>
   <p>Welcome, {{ user.username }}! This is your profile page.</p>
 
-  <!-- Favorited Recipes Section -->
   <div class="m-2">
     <h2>Your Favorited Recipes</h2>
-
-    <!-- Display Favorited Recipes -->
     {% if favorites %}
       {% for recipe in favorites %}
         <div class="border border-primary p-3 m-3">
