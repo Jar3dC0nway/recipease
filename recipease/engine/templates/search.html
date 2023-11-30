@@ -1,5 +1,14 @@
 {% extends "base.html" %}
 {% block html %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  .star-rating {
+    font-size: 24px;
+    color: #FFD700; /* Color for filled stars */
+  }
+  
+</style>
+
 
 <html lang="en">
   <head>
@@ -42,13 +51,37 @@
         {% endfor %}
       </div>
     </div>
+
+    <!-- Display Ratings -->
+    <div class="border border-primary p-3 m-3">
+      <h4>Ratings:</h4>
+      <ul>
+        {% for rating in term.12 %}
+          <li>
+            <span class="star-rating">
+              <script>
+                var rating = {{ rating.0 }}; // Get the numerical rating value
+                var filledStars = Math.round(rating); // Calculate the number of filled stars
+                for (var i = 0; i < filledStars; i++) {
+                  document.write('<i class="fas fa-star"></i>'); // Filled star icon
+                }
+                for (var i = filledStars; i < 5; i++) {
+                  document.write('<i class="far fa-star"></i>'); // Empty star icon
+                }
+              </script>
+            </span>
+            - {{ rating.2 }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
     {% if user.is_authenticated %}
     <a class="btn btn-primary" href="{% url 'rate_recipe' term.0 %}">Rate</a>
     <a class="btn btn-primary" href="{% url 'add_comment' term.0 %}" >Add Comment</a>
     {% endif %}
     {% endfor %}
   </div>
-
 
   </body>
 </html>
