@@ -278,6 +278,30 @@ def add_ingredient(ingredientID, recipeID, name, food_type, amount):
     
     __run_sql(sql_query)
 
+def favorite_exists(email, recipe_id):
+    sql_query = f"SELECT COUNT(*) FROM Favorite WHERE email = '{email}' AND recipeID = {recipe_id};"
+    result = __run_sql(sql_query)
+    if result and result[0]:
+        count = result[0][0][0] if result and result[0] else 0
+        return count > 0
+    else:
+        return None
+def add_favorite(email, recipe_id):
+    sql_query = (f"INSERT INTO Favorite (email, recipeID) "
+                 f"VALUES ('{email}', {recipe_id});")
+    __run_sql(sql_query)
+    check_favorites()
+
+def check_favorites():
+    sql_query = "SELECT * FROM Favorite;"
+    result = __run_sql(sql_query)
+    print(result)
+    return result
+
+def get_favorites(email):
+    sql_query = f"SELECT Recipe.* FROM Recipe INNER JOIN Favorite ON Recipe.recipeID = Favorite.recipeID WHERE Favorite.email = '{email}';"
+    return sql_return(sql_query)
+
 
 def rating_exists(email, recipe_id):
     sql_query = (f"SELECT value FROM Rates WHERE email = '{email}' AND recipeID = {recipe_id};")

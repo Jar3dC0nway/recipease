@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 
 from .database import sql_return, user_exists, add_user, get_user_info, max_recipeID, add_new_recipe, \
     add_nutrition_info, max_ingredientID, add_ingredient, rating_exists, add_rating, update_rating, add_new_comment, \
-    max_commentID, edit_comment, delete_comment
+    max_commentID, edit_comment, delete_comment, favorite_exists, add_favorite, get_favorites
 from .forms import SearchForm, RecipeForm, IngredientForm, IngredientFormSet, RecipeRatingForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
@@ -71,12 +71,13 @@ def search(request):
 @login_required
 def view_profile(request, owner=None):
     curr_user = get_user(request)
+    favorites = get_favorites(curr_user.email)
     if owner:
         owner_user = get_user_info(owner)  # returns username
     else:
         owner_user = curr_user
     return render(request, 'profile.html',
-                  {"request_type": request.method, "user": curr_user, "owner": owner_user, })
+                  {"request_type": request.method, "user": curr_user, "owner": owner_user, "favorites": favorites})
 
 
 def success_view(request):
@@ -125,6 +126,15 @@ def add_recipe(request):
         ingredients_formset = IngredientFormSet()
 
     return render(request, 'add_recipe.html', {'form': form, 'ingredients_formset': ingredients_formset})
+
+
+@login_required
+def favorite_recipe(request, recipe_id):
+    exists = favorite_exists(get_user(request).email, recipe_id)
+    if not(exists):
+        add_favorite(get_user(request).email, recipe_id)
+
+    return render(request, 'favorite_success.html')
 
 
 def rating_success_view(request):
