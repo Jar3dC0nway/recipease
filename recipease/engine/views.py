@@ -214,22 +214,6 @@ def edit_comment_info(request, recipe_id, comment_id):
     return render(request, 'edit_comment.html', {'recipe_id': recipe_id, 'comment_id': comment_id})
 
 
-@login_required
-def edit_comment_info(request, recipe_id, comment_id):
-    success, http = check_matching_email(request, recipe_id, comment_id)
-    if not success:
-        return http
-
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            content = form.cleaned_data['content']
-            edit_comment(recipe_id, comment_id, content)
-            return redirect('comment_edit_success_view')
-
-    return render(request, 'edit_comment.html', {'recipe_id': recipe_id, 'comment_id': comment_id})
-
-
 def comment_edit_success_view(request):
     return render(request, 'comment_edit_success.html')
 
