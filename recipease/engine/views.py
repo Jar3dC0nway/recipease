@@ -4,7 +4,8 @@ from django.shortcuts import render, redirect
 
 from .database import sql_return, user_exists, add_user, get_user_info, max_recipeID, add_new_recipe, \
     add_nutrition_info, max_ingredientID, add_ingredient, rating_exists, add_rating, update_rating, add_new_comment, \
-    max_commentID, edit_comment, delete_comment, favorite_exists, add_favorite, get_favorites
+    max_commentID, edit_comment, delete_comment, favorite_exists, add_favorite, get_favorites, get_all_user_recipes, recipe_exists, \
+    delete_recipe_db, remove_favorite
 from .forms import SearchForm, RecipeForm, IngredientForm, IngredientFormSet, RecipeRatingForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
@@ -75,14 +76,22 @@ def search(request):
 @login_required
 def view_profile(request, owner=None):
     curr_user = get_user(request)
-    favorites = get_favorites(curr_user.email)[0]
-    print(favorites)
+    favorites = get_favorites(get_user(request).email)[0]
+    user_created_recipes = get_all_user_recipes(get_user(request).email)[0]
     if owner:
         owner_user = get_user_info(owner)  # returns username
     else:
         owner_user = curr_user
     return render(request, 'profile.html',
-                  {"request_type": request.method, "user": curr_user, "owner": owner_user, "favorites": favorites})
+                  {"request_type": request.method, "user": curr_user, "owner": owner_user, "favorites": favorites, "created_recipes": user_created_recipes})
+
+@login_required
+def delete_recipe(request, recipe_id):
+    exists = recipe_exists(recipe_id)
+    if (exists):
+        delete_recipe_db(recipe_id)
+    return render(request, 'delete_success.html')
+
 
 
 def success_view(request):
@@ -141,6 +150,13 @@ def favorite_recipe(request, recipe_id):
 
     return render(request, 'favorite_success.html')
 
+@login_required
+def unfavorite_recipe(request, recipe_id):
+    exists = favorite_exists(get_user(request).email, recipe_id)
+    if exists:
+        remove_favorite(get_user(request).email, recipe_id)
+
+    return render(request, 'unfavorite_success.html')
 
 def rating_success_view(request):
     return render(request, 'rating_success.html')

@@ -292,8 +292,32 @@ def add_favorite(email, recipe_id):
     __run_sql(sql_query)
     check_favorites()
 
+def remove_favorite(email, recipe_id):
+    sql_query = f"DELETE FROM Favorite WHERE email = '{email}' AND recipeID = {recipe_id};"
+    __run_sql(sql_query)
+    check_favorites()
+
+
+def recipe_exists(recipe_id):
+    sql_query = f"SELECT COUNT(*) FROM Recipe WHERE recipeID = {recipe_id};"
+    result = __run_sql(sql_query)
+    if result and result[0]:
+        count = result[0][0][0] if result and result[0] else 0
+        return count > 0
+    else:
+        return False
+def delete_recipe_db(recipe_id):
+    sql_query = f"DELETE FROM Recipe WHERE recipeID = {recipe_id};"
+    __run_sql(sql_query)
+
 def check_favorites():
     sql_query = "SELECT * FROM Favorite;"
+    result = __run_sql(sql_query)
+    print(result)
+    return result
+
+def check_user():
+    sql_query = "SELECT * FROM User;"
     result = __run_sql(sql_query)
     print(result)
     return result
