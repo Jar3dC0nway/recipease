@@ -50,6 +50,9 @@ def search(request):
                 comments = sql_return(f"SELECT content, email, recipeID, commentID FROM Comment WHERE recipeID = {recipeID};")
                 li.append(comments[0])
 
+                ratings = sql_return(f"SELECT value, recipeID, email FROM Rates WHERE recipeID = {recipeID};")
+                li.append(ratings[0])  # Append the ratings to the list
+
                 li[8] = [s[8]]
             else:  # Otherwise, don't add it and just add the ingredient info
                 li = list(cleaned[-1])
@@ -62,6 +65,7 @@ def search(request):
                         terms.append(li[8][-1])
 
         # print(cleaned)
+        # print(ratings)
 
         return render(request, 'search.html', {'search': cleaned, 'terms': terms})
 
