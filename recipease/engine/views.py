@@ -50,6 +50,9 @@ def search(request):
                 comments = sql_return(f"SELECT content, email, recipeID, commentID FROM Comment WHERE recipeID = {recipeID};")
                 li.append(comments[0])
 
+                ratings = sql_return(f"SELECT value, recipeID, email FROM Rates WHERE recipeID = {recipeID};")
+                li.append(ratings[0])  # Append the ratings to the list
+
                 li[8] = [s[8]]
             else:  # Otherwise, don't add it and just add the ingredient info
                 li = list(cleaned[-1])
@@ -62,6 +65,7 @@ def search(request):
                         terms.append(li[8][-1])
 
         # print(cleaned)
+        # print(ratings)
 
         return render(request, 'search.html', {'search': cleaned, 'terms': terms})
 
@@ -71,7 +75,8 @@ def search(request):
 @login_required
 def view_profile(request, owner=None):
     curr_user = get_user(request)
-    favorites = get_favorites(curr_user.email)
+    favorites = get_favorites(curr_user.email)[0]
+    print(favorites)
     if owner:
         owner_user = get_user_info(owner)  # returns username
     else:
@@ -206,22 +211,6 @@ def check_matching_email(request, recipe_id, comment_id):
         print("email not matched")
         return False, HttpResponseRedirect("/")
     return True, None
-
-
-@login_required
-def edit_comment_info(request, recipe_id, comment_id):
-    success, http = check_matching_email(request, recipe_id, comment_id)
-    if not success:
-        return http
-
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            content = form.cleaned_data['content']
-            edit_comment(recipe_id, comment_id, content)
-            return redirect('comment_edit_success_view')
-
-    return render(request, 'edit_comment.html', {'recipe_id': recipe_id, 'comment_id': comment_id})
 
 
 @login_required
