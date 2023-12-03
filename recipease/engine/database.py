@@ -278,6 +278,18 @@ def add_ingredient(ingredientID, recipeID, name, food_type, amount):
     
     __run_sql(sql_query)
 
+def get_top_rated_recipes():
+    sql_query = """
+    SELECT Recipe.*, AVG(Rates.value) as average_rating
+    FROM Recipe
+    JOIN Rates ON Recipe.recipeID = Rates.recipeID
+    GROUP BY Recipe.recipeID
+    ORDER BY average_rating DESC
+    LIMIT 15;
+    """
+    return __run_sql(sql_query)
+
+
 def favorite_exists(email, recipe_id):
     sql_query = f"SELECT COUNT(*) FROM Favorite WHERE email = '{email}' AND recipeID = {recipe_id};"
     result = __run_sql(sql_query)

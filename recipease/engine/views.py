@@ -5,20 +5,21 @@ from django.shortcuts import render, redirect
 from .database import sql_return, user_exists, add_user, get_user_info, max_recipeID, add_new_recipe, \
     add_nutrition_info, max_ingredientID, add_ingredient, rating_exists, add_rating, update_rating, add_new_comment, \
     max_commentID, edit_comment, delete_comment, favorite_exists, add_favorite, get_favorites, get_all_user_recipes, recipe_exists, \
-    delete_recipe_db, remove_favorite
+    delete_recipe_db, remove_favorite, get_top_rated_recipes
 from .forms import SearchForm, RecipeForm, IngredientForm, IngredientFormSet, RecipeRatingForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user
 
 
 def index(request):
+    top_recipes = get_top_rated_recipes()[0]
     user = get_user(request)  # Get the authenticated user
     if user.is_authenticated:
         if not user_exists(user.email):
             add_user(user.email, user.username)
 
     form = SearchForm()
-    return render(request, 'index.html', {'form': form})
+    return render(request, 'index.html', {'form': form, 'top_recipes': top_recipes})
 
 
 def search(request):
