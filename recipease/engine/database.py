@@ -257,8 +257,10 @@ def add_new_recipe(email, recipe_id, title, description, cook_time, instructions
 
 def add_nutrition_info(recipe_id, calories , fat, satfat, carbs, fiber, sugar, protein):
     sql_query = (f"INSERT INTO Nutrition (recipeID, calories, fat, satfat, carbs, fiber, sugar, protein) "
-                f"VALUES ({int(recipe_id)}, {int(calories)}, {int(fat)}, {int(satfat)}, {int(carbs)}, "
-                f"{int(fiber)}, {int(sugar)}, {int(protein)});")
+                 f"VALUES ({int(recipe_id)}, {int(calories)}, {int(fat if fat is not None else 0)}, "
+                 f"{int(satfat if satfat is not None else 0)}, {int(carbs if carbs is not None else 0)}, "
+                 f"{int(fiber if fiber is not None else 0)}, {int(sugar if sugar is not None else 0)}, "
+                 f"{int(protein if protein is not None else 0)});")
     __run_sql(sql_query)
 
 # used to figure out the next ingredientID
