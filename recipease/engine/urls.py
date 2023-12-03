@@ -23,5 +23,7 @@ urlpatterns = [
     path('comment_success/', views.comment_success_view, name='comment_success_view'),
     path('comment_edit_success/', views.comment_edit_success_view, name='comment_edit_success_view'),
     path('comment_delete_success/', views.comment_delete_success_view, name='comment_delete_success_view'),
-    path('favorite_recipe/<int:recipe_id>/', views.favorite_recipe, name='favorite_recipe')
+    path('favorite_recipe/<int:recipe_id>/', views.favorite_recipe, name='favorite_recipe'),
+    path('unfavorite_recipe/<int:recipe_id>/', views.unfavorite_recipe, name='unfavorite_recipe'),
+    path('delete_recipe/<int:recipe_id>/', views.delete_recipe, name='delete_recipe')
 ]
