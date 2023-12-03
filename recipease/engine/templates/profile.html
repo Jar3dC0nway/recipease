@@ -9,20 +9,20 @@
   <div class="d-flex justify-content-center">
     <h1 class="my-3">Profile</h1>
   </div>
-  <p>Welcome, {{ user.username }}! This is your profile page.</p>
+  <!--<p>Welcome, {{ user.username }}! This is your profile page.</p> -->
 
   <div class="m-2">
     <h2>Your Favorited Recipes</h2>
     {% if favorites %}
       {% for recipe in favorites %}
         <div class="border border-primary p-3 m-3">
-          <p><strong>Title:</strong> {{ recipe.title }}</p>
-          <p><strong>Description:</strong> {{ recipe.description }}</p>
-          <p><strong>Cooking Time:</strong> {{ recipe.cook_time }} minutes</p>
-          <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+          <p><strong>Title:</strong> {{ recipe.2 }}</p>
+          <p><strong>Description:</strong> {{ recipe.3 }}</p>
+          <p><strong>Cooking Time:</strong> {{ recipe.4 }} minutes</p>
+          <p><strong>Instructions:</strong> {{ recipe.5 }}</p>
           {% if user.is_authenticated %}
-            <a class="btn btn-primary" href="{% url 'rate_recipe' recipe.recipeID %}">Rate</a>
-            <a class="btn btn-primary" href="{% url 'add_comment' recipe.recipeID %}">Add Comment</a>
+            <a class="btn btn-primary" href="{% url 'rate_recipe' recipe.0 %}">Rate</a>
+            <a class="btn btn-primary" href="{% url 'add_comment' recipe.0 %}">Add Comment</a>
           {% endif %}
         </div>
       {% endfor %}

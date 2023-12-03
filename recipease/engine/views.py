@@ -71,7 +71,8 @@ def search(request):
 @login_required
 def view_profile(request, owner=None):
     curr_user = get_user(request)
-    favorites = get_favorites(curr_user.email)
+    favorites = get_favorites(curr_user.email)[0]
+    print(favorites)
     if owner:
         owner_user = get_user_info(owner)  # returns username
     else:
