@@ -36,6 +36,7 @@
                     <p>Cook Time: {{ recipe.4 }} minutes</p>
                     <p>Instructions: {{ recipe.5 }}</p>
                     {% if user.is_authenticated %}
+
                       <div class="d-flex justify-content-center">
                         <a href="{% url 'favorite_recipe' recipe.0 %}" class="card-link m-1">Favorite</a>
                         <a href="{% url 'add_comment' recipe.0 %}" class="card-link m-1">Comment</a>
