@@ -88,6 +88,11 @@ def view_profile(request, owner=None):
 
 @login_required
 def delete_recipe(request, recipe_id):
+
+    success, http = check_email(request, recipe_id)
+    if not success:
+        return http
+
     exists = recipe_exists(recipe_id)
     if (exists):
         delete_recipe_db(recipe_id)
@@ -217,6 +222,26 @@ def check_matching_email(request, recipe_id, comment_id):
         return False, HttpResponseRedirect("/")
 
     c = sql_return(f"SELECT email FROM Comment WHERE recipeID = {recipe_id} AND commentID = {comment_id};")
+    try:
+        c = c[0][0]
+    except Exception:
+        return False, HttpResponseRedirect("/")
+    if len(c) == 0:
+        print("email not found")
+        return False, HttpResponseRedirect("/")
+    if c[0] != get_user(request).email:
+        print("email not matched")
+        return False, HttpResponseRedirect("/")
+    return True, None
+
+def check_email(request, recipe_id):
+
+    if not str(recipe_id).isnumeric():
+        print(f"{request.user} tried accessing/modifying comments with invalid recipeID: {recipe_id}")
+        return False, HttpResponseRedirect("/")
+
+    query = f"SELECT email FROM Comment WHERE recipeID = {recipe_id};"
+    c = sql_return(query)
     try:
         c = c[0][0]
     except Exception:
