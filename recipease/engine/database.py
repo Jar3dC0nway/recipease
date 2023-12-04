@@ -399,7 +399,7 @@ def edit_recipe(recipe_id, new_title, new_description, new_cook_time, new_instru
     __run_sql(sql_query)
 
 def get_all_user_recipes(email):
-    sql_query = (f"SELECT recipeID, title, description FROM Recipe WHERE email = '{str(email)}';")
+    sql_query = (f"SELECT Recipe.* FROM Recipe WHERE email = '{str(email)}';")
     return __run_sql(sql_query)
 
 def get_ingredient_info(ingredient_id):
