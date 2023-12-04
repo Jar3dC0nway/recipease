@@ -321,7 +321,8 @@ def recipe_exists(recipe_id):
     else:
         return False
 def delete_recipe_db(recipe_id):
-    sql_query = f"DELETE FROM Recipe WHERE recipeID = {recipe_id};"
+    sql_query = (f"DELETE FROM Recipe_Ingredients WHERE recipeID = {recipe_id}; "
+                 f"DELETE FROM Recipe WHERE recipeID = {recipe_id};")
     __run_sql(sql_query)
 
 def check_favorites():

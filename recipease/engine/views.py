@@ -130,6 +130,8 @@ def add_recipe(request):
             protein = form.cleaned_data['protein']
             add_nutrition_info(recipe_id, calories, fat, sat_fat, carbs, fiber, sugar, protein)
 
+            print(f"Formset: {ingredients_formset}")
+
             for ingredient_form in ingredients_formset:
                 name = ingredient_form.cleaned_data.get('name')
                 amount = ingredient_form.cleaned_data.get('amount')
