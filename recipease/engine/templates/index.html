@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block html %}
 <html lang="en">
-<body style="font-family: Pacifico;">
+<body style="font-family: Roboto;">
   <div class="d-flex justify-content-center">
     <h1 class="my-3">Recipease</h1>
   </div>
@@ -22,24 +22,47 @@
         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active" aria-current="true"{% endif %} aria-label="Slide {{ forloop.counter }}"></button>
       {% endfor %}
     </div>
-    <div class="carousel-inner rounded border border-4 border-radius-lg" style="height: 25vw; background-color: #709255ff">
-      {% for recipe in top_recipes %}
+    <div class="carousel-inner rounded border border-4 border-radius-lg" style="height: 40vw; background-color: #709255ff">
+      {% for r, n in top_recipes.items%}
         <div class="carousel-item {% if forloop.first %}active{% endif %}">
           <div class="container">
             <div class="row align-items-start">
               <div class="col">
                 <div class="card" style="min-height: 40vw">
                   <div class="card-body">
-                    <h5 class="card-title">{{ recipe.2 }}</h5>
-                    <p>Rating: {{ recipe.7|floatformat:2 }}★</p>
-                    <p class="card-text">{{ recipe.3 }}</p>
-                    <p>Cook Time: {{ recipe.4 }} minutes</p>
-                    <p>Instructions: {{ recipe.5 }}</p>
+                    <h5 class="card-title">{{ r.2 }}</h5>
+                    <p>Rating: {{ r.7|floatformat:2 }}★</p>
+                    <p class="card-text">{{ r.3 }}</p>
+                    <p>Cook Time: {{ r.4 }} minutes</p>
+                    <p>Instructions: {{ r.5 }}</p>
+                    <p>
+                      {% if n.0.0.0 > 0 %}
+                          Calories: {{ n.0.0.0 }}<br>
+                      {% endif %}
+                      {% if n.0.0.1 > 0 %}
+                          Fat: {{ n.0.0.1 }}<br>
+                      {% endif %}
+                      {% if n.0.0.2 > 0 %}
+                          SatFat: {{ n.0.0.2 }}<br>
+                      {% endif %}
+                      {% if n.0.0.3 > 0 %}
+                          Carbs: {{ n.0.0.3 }}<br>
+                      {% endif %}
+                      {% if n.0.0.4 > 0 %}
+                          Fiber: {{ n.0.0.4 }}<br>
+                      {% endif %}
+                      {% if n.0.0.5 > 0 %}
+                          Sugar: {{ n.0.0.5 }}<br>
+                      {% endif %}
+                      {% if n.0.0.6 > 0 %}
+                          Protein: {{ n.0.0.6 }}<br>
+                      {% endif %}
+              </p>
                     {% if user.is_authenticated %}
                       <div class="d-flex justify-content-center">
-                        <a href="{% url 'favorite_recipe' recipe.0 %}" class="card-link m-1">Favorite</a>
-                        <a href="{% url 'add_comment' recipe.0 %}" class="card-link m-1">Comment</a>
-                        <a href="{% url 'rate_recipe' recipe.0 %}" class="card-link m-1">Rate</a>
+                        <a href="{% url 'favorite_recipe' r.0 %}" class="card-link">Favorite</a>
+                        <a href="{% url 'add_comment' r.0 %}" class="card-link">Comment</a>
+                        <a href="{% url 'rate_recipe' r.0 %}" class="card-link">Rate</a>
                       </div>
                     {% endif %}
                   </div>

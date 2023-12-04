@@ -12,14 +12,21 @@ from django.contrib.auth import get_user
 
 
 def index(request):
+    top_rated_nutrition = {}
     top_recipes = get_top_rated_recipes()[0]
+    if top_recipes:
+        for r in top_recipes:
+            recipeID = r[0]
+            nutrition_info = sql_return(f"SELECT calories, fat, satfat, carbs, fiber, sugar, protein FROM Nutrition WHERE recipeID = {recipeID};")
+            top_rated_nutrition[r] = nutrition_info
+
     user = get_user(request)  # Get the authenticated user
     if user.is_authenticated:
         if not user_exists(user.email):
             add_user(user.email, user.username)
 
     form = SearchForm()
-    return render(request, 'index.html', {'form': form, 'top_recipes': top_recipes})
+    return render(request, 'index.html', {'form': form, 'top_recipes': top_rated_nutrition})
 
 
 def search(request):
@@ -34,12 +41,7 @@ def search(request):
             ingredient_search += (f" UNION (SELECT recipeID "  # Add each term to recipe search
                                   f"FROM Recipe NATURAL JOIN Recipe_Ingredients "
                                   f"NATURAL JOIN Ingredient "
-                                  f"WHERE Ingredient.name LIKE '%{term}%' " 
-                                  f"OR Recipe.title LIKE '%{term}%') "
-                                  f"UNION (SELECT recipeID "
-                                  f"FROM Recipe NATURAL JOIN Belongs_To "
-                                  f"NATURAL JOIN Category "
-                                  f"WHERE Category.name LIKE '{term}')")
+                                  f"WHERE Ingredient.name LIKE '%{term}%')")
         full_search = (f"SELECT * "  # Convert recipeIDs back into recipe data
                        f"FROM Recipe NATURAL JOIN Ingredient NATURAL JOIN Recipe_Ingredients "
                        f"WHERE Recipe.recipeID IN ({ingredient_search});")
@@ -60,6 +62,9 @@ def search(request):
                 ratings = sql_return(f"SELECT value, recipeID, email FROM Rates WHERE recipeID = {recipeID};")
                 li.append(ratings[0])  # Append the ratings to the list
 
+                nutrition_info = sql_return(f"SELECT calories, fat, satfat, carbs, fiber, sugar, protein FROM Nutrition WHERE recipeID = {recipeID};")
+                li.append(nutrition_info[0])
+            
                 li[8] = [s[8]]
             else:  # Otherwise, don't add it and just add the ingredient info
                 li = list(cleaned[-1])
@@ -70,7 +75,6 @@ def search(request):
                 if term in li[8][-1]:
                     if term != li[8][-1]:
                         terms.append(li[8][-1])
-
         # print(cleaned)
         # print(ratings)
 
@@ -82,14 +86,27 @@ def search(request):
 @login_required
 def view_profile(request, owner=None):
     curr_user = get_user(request)
+    favs_nutrition = {}
     favorites = get_favorites(get_user(request).email)[0]
+    if favorites:
+        for f in favorites:
+            recipeID = f[0]
+            nutrition_info = sql_return(f"SELECT calories, fat, satfat, carbs, fiber, sugar, protein FROM Nutrition WHERE recipeID = {recipeID};")
+            favs_nutrition[f] = nutrition_info
+
+    user_nutrition = {}
     user_created_recipes = get_all_user_recipes(get_user(request).email)[0]
+    if user_created_recipes:
+        for r in user_created_recipes:
+            recipeID = r[0]
+            nutrition_info = sql_return(f"SELECT calories, fat, satfat, carbs, fiber, sugar, protein FROM Nutrition WHERE recipeID = {recipeID};")
+            user_nutrition[r] = nutrition_info
     if owner:
         owner_user = get_user_info(owner)  # returns username
     else:
         owner_user = curr_user
     return render(request, 'profile.html',
-                  {"request_type": request.method, "user": curr_user, "owner": owner_user, "favorites": favorites, "created_recipes": user_created_recipes})
+                  {"request_type": request.method, "user": curr_user, "owner": owner_user, "favorites": favs_nutrition, "created_recipes": user_nutrition})
 
 @login_required
 def delete_recipe(request, recipe_id):
