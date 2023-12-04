@@ -93,11 +93,6 @@ def view_profile(request, owner=None):
 
 @login_required
 def delete_recipe(request, recipe_id):
-
-    success, http = check_matching_email(request, recipe_id, recipe_id)
-    if not success:
-        return http
-
     exists = recipe_exists(recipe_id)
     if (exists):
         delete_recipe_db(recipe_id)
