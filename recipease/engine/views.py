@@ -41,7 +41,12 @@ def search(request):
             ingredient_search += (f" UNION (SELECT recipeID "  # Add each term to recipe search
                                   f"FROM Recipe NATURAL JOIN Recipe_Ingredients "
                                   f"NATURAL JOIN Ingredient "
-                                  f"WHERE Ingredient.name LIKE '%{term}%')")
+                                  f"WHERE Ingredient.name LIKE '%{term}%' " 
+                                  f"OR Recipe.title LIKE '%{term}%') "
+                                  f"UNION (SELECT recipeID "
+                                  f"FROM Recipe NATURAL JOIN Belongs_To "
+                                  f"NATURAL JOIN Category "
+                                  f"WHERE Category.name LIKE '{term}')")
         full_search = (f"SELECT * "  # Convert recipeIDs back into recipe data
                        f"FROM Recipe NATURAL JOIN Ingredient NATURAL JOIN Recipe_Ingredients "
                        f"WHERE Recipe.recipeID IN ({ingredient_search});")
