@@ -248,7 +248,7 @@ def check_email(request, recipe_id):
         print(f"{request.user} tried modifying/deleting comment with recipeID: {recipe_id}")
         return False, HttpResponseRedirect("/")
 
-    c = sql_return(f"SELECT email FROM Comment WHERE recipeID = {recipe_id};")
+    c = sql_return(f"SELECT email FROM Recipe WHERE recipeID = {recipe_id};")
 
     try:
         # Attempt to extract the first email from the query result
@@ -261,7 +261,7 @@ def check_email(request, recipe_id):
         print("Email not found")
         return False, HttpResponseRedirect("/")
 
-    if email != get_user(request).email:
+    if email[0] != get_user(request).email:
         # User's email does not match the email associated with the recipe_id
         print("Email not matched")
         return False, HttpResponseRedirect("/")
