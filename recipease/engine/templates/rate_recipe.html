@@ -34,6 +34,11 @@
     .star-rating input[type="radio"]:checked ~ .star {
       color: gold; /* Updated color */
     }
+    .star-rating input[type="radio"] {
+      visibility: hidden; /* Hides the radio buttons */
+      position: absolute; /* Ensures labels are clickable */
+      margin-top: -20px; /* Adjust as needed to align labels */
+    }
 
     .submit-btn {
       background-color: black; /* Button color */
