@@ -236,23 +236,31 @@ def check_matching_email(request, recipe_id, comment_id):
 
 def check_email(request, recipe_id):
 
+    # Check if recipe_id is numeric
     if not str(recipe_id).isnumeric():
-        print(f"{request.user} tried accessing/modifying comments with invalid recipeID: {recipe_id}")
+        print(f"{request.user} tried modifying/deleting comment with recipeID: {recipe_id}")
         return False, HttpResponseRedirect("/")
 
-    query = f"SELECT email FROM Comment WHERE recipeID = {recipe_id};"
-    c = sql_return(query)
+    c = sql_return(f"SELECT email FROM Comment WHERE recipeID = {recipe_id};")
+
     try:
-        c = c[0][0]
+        # Attempt to extract the first email from the query result
+        email = c[0][0]
     except Exception:
         return False, HttpResponseRedirect("/")
-    if len(c) == 0:
-        print("email not found")
+
+    if len(email) == 0:
+        # No email found for the given recipe_id
+        print("Email not found")
         return False, HttpResponseRedirect("/")
-    if c[0] != get_user(request).email:
-        print("email not matched")
+
+    if email != get_user(request).email:
+        # User's email does not match the email associated with the recipe_id
+        print("Email not matched")
         return False, HttpResponseRedirect("/")
+
     return True, None
+
 
 
 @login_required
