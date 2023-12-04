@@ -35,21 +35,45 @@
                 <label for="instructions">Instructions:</label>
                 <textarea class="form-control" id="instructions" name="instructions" required></textarea>
               </div>
-              <div class="form-group mb-3">
-                <label for="calories">Calories:</label>
+              <div class="form-group">
+                <label for="calories"> Calories :</label>
                 <input type="number" class="form-control" id="calories" name="calories" required>
-              </div>
-              <div id="ingredients-container" class="mb-3">
-                {{ ingredients_formset.management_form }}
-                {% for form in ingredients_formset.forms %}
-                  <div class="ingredient-input mb-3">
-                    {{ form.id }}
-                    {{ form.name }}
-                    {{ form.amount }}
-                    {{ form.ingredient_type }}
-                  </div>
-                {% endfor %}
-              </div>
+            </div>
+            <div class="form-group">
+                <label for="fat"> Total Fat (g)</label>
+                <input type="number" class="form-control" id="fat" name="fat" required>
+            </div>
+            <div class="form-group">
+                <label for="sat_fat"> Sat Fat(g):</label>
+                <input type="number" class="form-control" id="sat_fat" name="sat_fat" required>
+            </div>
+            <div class="form-group">
+                <label for="carbs"> Total carbs (g):</label>
+                <input type="number" class="form-control" id="carbs" name="carbs" required>
+            </div>
+            <div class="form-group">
+                <label for="fiber">Fiber (g):</label>
+                <input type="number" class="form-control" id="fiber" name="fiber" required>
+            </div>
+            <div class="form-group">
+                <label for="sugar"> Sugar (g):</label>
+                <input type="number" class="form-control" id="sugar" name="sugar" required>
+            </div>
+            <div class="form-group">
+                <label for="protein"> Protein (g) :</label>
+                <input type="number" class="form-control" id="protein" name="protein" required>
+            </div>
+            <div id="ingredients-container" class="mb-3">
+             Ingredients: {{ ingredients_formset.management_form }}
+              {% for form in ingredients_formset.forms %}
+                <div class="ingredient-input mb-3">
+                  {{ form.id }}
+                  {{ form.name }}
+                  {{ form.amount }}
+                  {{ form.ingredient_type }}
+                </div>
+              {% endfor %}
+            </div>
               <div class="mb-3">
                 <button type="button" id="add-ingredient-button" class="btn btn-secondary">Add More Ingredient</button>
               </div>

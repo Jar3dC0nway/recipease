@@ -21,19 +21,47 @@
     <div class="card mb-3">
       <div class="card-body">
         <h5 class="card-title">{{ term.3 }}</h5>
-        <h6 class="card-subtitle mb-2 text-muted">{{ term.6 }}</h6>
+        Instructions: {{ term.6 }} <br>
+        
         <p class="card-text">
           Cooking time: {{ term.5 }} minutes
         </p>
         <p class="card-text">{{ term.7 }}</p>
         
         <p>
+          Ingredients: 
           {% for t in term.8 %}
             <span class="{% if t in terms %}text-primary{% endif %}">
               {{ t }}
             </span>
           {% endfor %}
         </p>
+
+        <p>
+          {% for n in term.13 %}
+              {% if n.0 > 0 %}
+                  Calories: {{ n.0 }}<br>
+              {% endif %}
+              {% if n.1 > 0 %}
+                  Fat: {{ n.1 }}<br>
+              {% endif %}
+              {% if n.2 > 0 %}
+                  SatFat: {{ n.2 }}<br>
+              {% endif %}
+              {% if n.3 > 0 %}
+                  Carbs: {{ n.3 }}<br>
+              {% endif %}
+              {% if n.4 > 0 %}
+                  Fiber: {{ n.4 }}<br>
+              {% endif %}
+              {% if n.5 > 0 %}
+                  Sugar: {{ n.5 }}<br>
+              {% endif %}
+              {% if n.6 > 0 %}
+                  Protein: {{ n.6 }}<br>
+              {% endif %}
+          {% endfor %}
+      </p>
 
         <div>
           {% for c in term.11 %}
