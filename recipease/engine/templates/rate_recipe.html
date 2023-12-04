@@ -2,20 +2,89 @@
 {% block html %}
 
 <html>
+<head>
+  <!-- Inline CSS for styling -->
+  <style>
+    .rating-form {
+      text-align: center;
+      margin-top: 20px;
+    }
 
-<form method="post" action="{% url 'rate_recipe' recipe_id %}">
+    .title {
+      text-align: center;
+      font-size: 2.5em; /* Adjust the size as needed */
+      color: #4a4a4a; /* Adjust the color as needed */
+      margin-bottom: 20px;
+    }
+
+    .star-rating {
+      display: flex;
+      justify-content: center;
+      flex-direction: row-reverse; /* This reverses the visual order */
+    }
+
+    .star {
+      font-size: 3em; /* Increased size of stars */
+      color: gray;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .star:hover,
+    .star-rating input[type="radio"]:checked ~ .star {
+      color: gold; /* Updated color */
+    }
+
+    .submit-btn {
+      background-color: black; /* Button color */
+      color: white; /* Text color */
+      font-size: 1em; /* Adjust the size as needed */
+      font-weight: bold; /* Makes the text bold */
+      padding: 10px 20px; /* Adds padding around the text */
+      border: 2px solid white; /* Adds a border */
+      border-radius: 5px; /* Rounds the corners */
+      display: block; /* Makes button a block element */
+      margin: 20px auto; /* Centers the button */
+      transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+    }
+    .submit-btn:hover {
+      background-color: gray; /* Changes background on hover */
+      color: black; /* Changes text color on hover */
+      cursor: pointer; /* Changes cursor to pointer */
+    }
+  </style>
+
+  <!-- Include JavaScript for interactivity -->
+  <script src="path_to_your_javascript.js"></script>
+</head>
+
+<body>
+  <h1 class="title">Rate The Recipe</h1>
+
+  <form method="post" action="{% url 'rate_recipe' recipe_id %}" class="rating-form">
     {% csrf_token %}
     <input type="hidden" name="recipe_id" value="{{ recipe.id }}">
-    <label for="rating">Rate this recipe:</label>
-    <select name="rating" id="rating">
-      <option value="1">1 - Terrible</option>
-      <option value="2">2 - Bad</option>
-      <option value="3">3 - Okay</option>
-      <option value="4">4 - Good</option>
-      <option value="5">5 - Excellent</option>
-    </select>
-    <button type="submit">Submit Rating</button>
-  </form>
 
-  </html>
+    <div class="star-rating">
+      <input type="radio" id="1-star" name="rating" value="5" />
+      <label for="1-star" class="star">&#9733;</label>
+
+      <input type="radio" id="2-stars" name="rating" value="4" />
+      <label for="2-stars" class="star">&#9733;</label>
+
+      <input type="radio" id="3-stars" name="rating" value="3" />
+      <label for="3-stars" class="star">&#9733;</label>
+
+      <input type="radio" id="4-stars" name="rating" value="2" />
+      <label for="4-stars" class="star">&#9733;</label>
+
+      <input type="radio" id="5-stars" name="rating" value="1" />
+      <label for="5-stars" class="star">&#9733;</label>
+    </div>
+
+    <button type="submit" class="submit-btn">Submit Rating</button>
+  </form>
+</body>
+
+</html>
 {% endblock %}

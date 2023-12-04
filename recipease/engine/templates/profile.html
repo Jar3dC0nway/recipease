@@ -89,9 +89,18 @@
                 {% endif %}
         </p>
           {% if user.is_authenticated %}
+<<<<<<< HEAD
             <a class="btn btn-primary" href="{% url 'rate_recipe' r.0 %}">Rate</a>
             <a class="btn btn-primary" href="{% url 'add_comment' r.0 %}">Add Comment</a>
             <a class="btn btn-primary" href="{% url 'delete_recipe' r.0 %}">Delete</a>
+=======
+
+          <div class="d-flex justify-content-center mt-2">
+            <a class="btn btn-primary me-1" href="{% url 'rate_recipe' recipe.0 %}">Rate</a>
+            <a class="btn btn-secondary me-1" href="{% url 'add_comment' recipe.0 %}">Add Comment</a>
+            <a class="btn btn-secondary" href="{% url 'delete_recipe' recipe.0 %}">Delete</a>
+            </div>
+>>>>>>> 20aaa3e7c17a5215cc92619c40cb591b41b121bd
           {% endif %}
         </div>
       {% endfor %}
