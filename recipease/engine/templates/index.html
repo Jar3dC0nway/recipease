@@ -59,9 +59,11 @@
                       {% endif %}
               </p>
                     {% if user.is_authenticated %}
-                      <a href="{% url 'favorite_recipe' r.0 %}" class="card-link">Favorite</a>
-                      <a href="{% url 'add_comment' r.0 %}" class="card-link">Comment</a>
-                      <a href="{% url 'rate_recipe' r.0 %}" class="card-link">Rate</a>
+                      <div class="d-flex justify-content-center">
+                        <a href="{% url 'favorite_recipe' r.0 %}" class="card-link">Favorite</a>
+                        <a href="{% url 'add_comment' r.0 %}" class="card-link">Comment</a>
+                        <a href="{% url 'rate_recipe' r.0 %}" class="card-link">Rate</a>
+                      </div>
                     {% endif %}
                   </div>
                 </div>

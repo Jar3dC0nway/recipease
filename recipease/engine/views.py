@@ -41,7 +41,12 @@ def search(request):
             ingredient_search += (f" UNION (SELECT recipeID "  # Add each term to recipe search
                                   f"FROM Recipe NATURAL JOIN Recipe_Ingredients "
                                   f"NATURAL JOIN Ingredient "
-                                  f"WHERE Ingredient.name LIKE '%{term}%')")
+                                  f"WHERE Ingredient.name LIKE '%{term}%' " 
+                                  f"OR Recipe.title LIKE '%{term}%') "
+                                  f"UNION (SELECT recipeID "
+                                  f"FROM Recipe NATURAL JOIN Belongs_To "
+                                  f"NATURAL JOIN Category "
+                                  f"WHERE Category.name LIKE '{term}')")
         full_search = (f"SELECT * "  # Convert recipeIDs back into recipe data
                        f"FROM Recipe NATURAL JOIN Ingredient NATURAL JOIN Recipe_Ingredients "
                        f"WHERE Recipe.recipeID IN ({ingredient_search});")
@@ -110,6 +115,11 @@ def view_profile(request, owner=None):
 
 @login_required
 def delete_recipe(request, recipe_id):
+
+    success, http = check_email(request, recipe_id)
+    if not success:
+        return http
+
     exists = recipe_exists(recipe_id)
     if (exists):
         delete_recipe_db(recipe_id)
@@ -146,6 +156,8 @@ def add_recipe(request):
             sugar = form.cleaned_data['sugar']
             protein = form.cleaned_data['protein']
             add_nutrition_info(recipe_id, calories, fat, sat_fat, carbs, fiber, sugar, protein)
+
+            print(f"Formset: {ingredients_formset}")
 
             for ingredient_form in ingredients_formset:
                 name = ingredient_form.cleaned_data.get('name')
@@ -250,6 +262,34 @@ def check_matching_email(request, recipe_id, comment_id):
         print("email not matched")
         return False, HttpResponseRedirect("/")
     return True, None
+
+def check_email(request, recipe_id):
+
+    # Check if recipe_id is numeric
+    if not str(recipe_id).isnumeric():
+        print(f"{request.user} tried modifying/deleting comment with recipeID: {recipe_id}")
+        return False, HttpResponseRedirect("/")
+
+    c = sql_return(f"SELECT email FROM Recipe WHERE recipeID = {recipe_id};")
+
+    try:
+        # Attempt to extract the first email from the query result
+        email = c[0][0]
+    except Exception:
+        return False, HttpResponseRedirect("/")
+
+    if len(email) == 0:
+        # No email found for the given recipe_id
+        print("Email not found")
+        return False, HttpResponseRedirect("/")
+
+    if email[0] != get_user(request).email:
+        # User's email does not match the email associated with the recipe_id
+        print("Email not matched")
+        return False, HttpResponseRedirect("/")
+
+    return True, None
+
 
 
 @login_required

@@ -5,29 +5,61 @@
 <html lang="en">
 <head>
     <title>Add Comment</title>
+    <style>
+        /* Add the styles here */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh; /* Reduced from 100vh to 90vh */
+            margin-top: -50px; /* Adjust this value as needed to move up */
+        }
+
+        .card {
+            width: 100%; /* Adjust width as needed */
+            max-width: 600px; /* Maximum width */
+
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+        }
+
+        .btn-primary {
+            background-color: black; /* Button color */
+            color: white; /* Text color */
+            font-size: 1em; /* Adjust the size as needed */
+            font-weight: bold; /* Makes the text bold */
+            padding: 10px 20px; /* Adds padding around the text */
+            border: 2px solid white; /* Adds a border */
+            border-radius: 5px; /* Rounds the corners */
+            display: block; /* Makes button a block element */
+            width: 100%; /* Full width */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effect */
+        }
+
+        .btn-primary:hover {
+            background-color: white; /* Changes background on hover */
+            color: black; /* Changes text color on hover */
+            cursor: pointer; /* Changes cursor to pointer */
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Add a Comment</h3>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h3>Add a Comment</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'add_comment' recipe_id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="recipe_id" value="{{ recipe_id }}">
+
+                    <div class="form-group mb-3">
+                        <label for="content" class="form-label">Your Comment</label>
+                        <textarea name="content" id="content" class="form-control" rows="4"></textarea>
                     </div>
-                    <div class="card-body">
-                        <form method="post" action="{% url 'add_comment' recipe_id %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="recipe_id" value="{{ recipe_id }}">
-                            
-                            <div class="form-group mb-3">
-                                <label for="content" class="form-label">Your Comment</label>
-                                <textarea name="content" id="content" class="form-control" rows="4"></textarea>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">Add Comment</button>
-                        </form>
-                    </div>
-                </div>
+
+                    <button type="submit" class="btn btn-primary">Add Comment</button>
+                </form>
             </div>
         </div>
     </div>
