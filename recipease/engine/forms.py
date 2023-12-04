@@ -12,7 +12,7 @@ class IngredientForm(forms.Form):
     amount = forms.CharField(max_length=32)
     ingredient_type = forms.CharField(max_length=32)
 
-IngredientFormSet = formset_factory(IngredientForm, extra=1)
+IngredientFormSet = formset_factory(IngredientForm, absolute_max=1500)
 
 
 class RecipeForm(forms.Form):

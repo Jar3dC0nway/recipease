@@ -55,8 +55,8 @@ def search(request):
         cleaned = []
         last = ""
         for s in search_result[0]:  # Remove duplicate recipeIDs and combine ingredient data
-            if s[3] != last:  # If you haven't seen this recipe yet, add it
-                last = s[3]
+            if s[0] != last:  # If you haven't seen this recipe yet, add it
+                last = s[0]
                 cleaned.append(s)
                 li = list(cleaned[-1])
 
@@ -157,9 +157,9 @@ def add_recipe(request):
             protein = form.cleaned_data['protein']
             add_nutrition_info(recipe_id, calories, fat, sat_fat, carbs, fiber, sugar, protein)
 
-            print(f"Formset: {ingredients_formset}")
-
             for ingredient_form in ingredients_formset:
+                if ingredient_form.cleaned_data.get('name') is None:
+                    continue
                 name = ingredient_form.cleaned_data.get('name')
                 amount = ingredient_form.cleaned_data.get('amount')
                 ingredient_type = ingredient_form.cleaned_data.get('ingredient_type')

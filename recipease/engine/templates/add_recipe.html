@@ -88,18 +88,20 @@
         document.addEventListener('DOMContentLoaded', function() {
         const ingredientsContainer = document.getElementById('ingredients-container');
         const addIngredientButton = document.getElementById('add-ingredient-button');
+        const totalForms = document.getElementById('id_form-TOTAL_FORMS');
         let ingredientIndex = 1; // Initialize the index
 
         addIngredientButton.addEventListener('click', function() {
             const ingredientInput = document.createElement('div');
             ingredientInput.classList.add('ingredient-input');
             ingredientInput.innerHTML = `
-                <input type="text" name="ingredients-name" placeholder="Ingredient Name">
-                <input type="text" name="ingredients-amount" placeholder="Amount">
-                <input type="text" name="ingredients-ingredient_type" placeholder="Ingredient Type">
+                <input type="text" name="form-` + ingredientIndex + `-name" placeholder="Ingredient Name">
+                <input type="text" name="form-` + ingredientIndex + `-amount" placeholder="Amount">
+                <input type="text" name="form-` + ingredientIndex + `-ingredient_type" placeholder="Ingredient Type">
             `;
             ingredientsContainer.appendChild(ingredientInput);
             ingredientIndex++; // Increment the index for the next ingredient
+            totalForms.value = ingredientIndex;
         });
     });
     </script>
